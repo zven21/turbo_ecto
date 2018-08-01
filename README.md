@@ -20,7 +20,7 @@ Turbo is a very rich ecto component,including search sort and paginate. Inspirat
 ```elixir
 def deps do
   [
-    {:turbo_ecto, "~> 0.1.0"}
+    {:turbo_ecto, "~> 0.1.3"}
   ]
 end
 ```
