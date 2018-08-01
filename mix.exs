@@ -30,6 +30,7 @@ defmodule Turbo.Ecto.MixProject do
       {:ex_doc, ">= 0.0.0", only: :dev},
       {:ecto, "~> 2.2"},
       {:postgrex, ">= 0.0.0", only: :test},
+      {:ex_machina, "~> 2.2", only: :test},
       {:credo, "~> 0.10.0", only: [:dev, :test], runtime: false}
     ]
   end
