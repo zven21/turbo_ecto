@@ -1,0 +1,17 @@
+language: elixir
+elixir:
+  - '1.6.4'
+otp_release:
+  - '20.3.2'
+addons:
+  postgresql: '9.4'
+services:
+  - postgresql
+cache:
+  directories:
+    - _build
+    - deps
+before_script:
+  - MIX_ENV=test mix ecto.create && MIX_ENV=test mix ecto.migrate
+script:
+  - MIX_ENV=test mix test
