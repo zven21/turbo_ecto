@@ -2,7 +2,6 @@ defmodule Turbo.Ecto.Variant do
   @moduledoc false
 
   use Ecto.Schema
-  use Turbo.Ecto
 
   schema "variants" do
     field :name, :string
