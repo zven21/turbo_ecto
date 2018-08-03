@@ -2,7 +2,6 @@ defmodule Turbo.Ecto.Product do
   @moduledoc false
 
   use Ecto.Schema
-  use Turbo.Ecto
 
   schema "products" do
     field :name, :string

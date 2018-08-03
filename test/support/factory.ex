@@ -1,4 +1,6 @@
 defmodule Turbo.Ecto.Factory do
+  @moduledoc false
+
   # with Ecto
   use ExMachina.Ecto, repo: Turbo.Ecto.Repo
 

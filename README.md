@@ -33,12 +33,6 @@ config :turbo_ecto, Turbo.Ecto,
   per_page: 10
 ```
 
-* Or add the `turbo_ecto` with elixir `use`
-
-```elixir
-use Turbo.Ecto, repo: MyApp.Repo, per_page: 10
-```
-
 ## Examples
 
 ```elixir
@@ -107,7 +101,7 @@ List of all possible predicates
 * [ ] Example website.
 * [x] Add the necessary code test.
 * [ ] Support `and` and `or` symbol. Example: e.g. `q[title_or_body_like]=hello123`, SQL: `title LIKE 'hello123' or body LIKE 'hello123'`
-* [ ] Support multi table assoc search. Example: e.g. `q[category_name_like]=cate1`.
+* [ ] Support multi table assoc search. Example: e.g. `q[category_name_like]=cate1`. [issue](https://github.com/zven21/turbo_ecto/issues/11)
 * [ ] Support multi table assoc sort. Example: e.g. `s=category_updated_at+desc`
 
 ## Credits
