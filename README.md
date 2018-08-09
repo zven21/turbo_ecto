@@ -5,6 +5,8 @@
 
 Turbo is a very rich ecto component,including search sort and paginate. Inspiration by ruby [ransack](https://github.com/activerecord-hackery/ransack) and learn from [rummage_ecto](https://github.com/aditya7iyengar/rummage_ecto)
 
+Phoenix support `turbo_html`, check [this](https://github.com/zven21/turbo_html) repos.
+
 ## Table of contents
 
 * [Getting started](#getting-started)
