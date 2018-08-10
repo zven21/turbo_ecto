@@ -6,8 +6,6 @@ defmodule Turbo.Ecto.Hooks.Search do
   alias Turbo.Ecto.Services.BuildSearchQuery
   alias Turbo.Ecto.Utils
 
-  @search_type ~w(like ilike eq gt lt gteq lteq)a
-
   @doc """
   Builds a search `Ecto.Query.t` on top of a given `Ecto.Query.t` variable
   with given `params`.
@@ -71,7 +69,8 @@ defmodule Turbo.Ecto.Hooks.Search do
   # params = %{"q" => %{"name_or_category_name_like" => "elixir"}}
   # Turbo.Ecto.Hooks.Search.run(Turbo.Ecto.Product, params)
   def build_query_map({search_field_and_type, search_term}, search_map, queryable) do
-    search_regex = ~r/([a-z1-9_]+)_(like|ilike|eq)$/
+    # FIXME
+    search_regex = ~r/([a-z1-9_]+)_(like|ilike|eq|gt|lt|gteq|lteq)$/
 
     if Regex.match?(search_regex, search_field_and_type) do
       [_, match, search_type] = Regex.run(search_regex, search_field_and_type)
@@ -123,7 +122,7 @@ defmodule Turbo.Ecto.Hooks.Search do
   end
 
   # Build with `or` expr cnndition
-  defp build_or_condition({search_field, search_expr}, search_ory) do
+  defp build_or_condition({search_field, _}, search_ory) do
     [hd | tl] = String.split(search_field, ~r{(_or_)})
 
     tl
@@ -132,7 +131,8 @@ defmodule Turbo.Ecto.Hooks.Search do
   end
 
   defp search_queryable({_, map}, queryable) do
-    assocs = Map.get(map, :assoc)
+    # FIXME
+    # assocs = Map.get(map, :assoc)
     search_field = String.to_atom(Map.get(map, :search_field))
     search_type = String.to_atom(Map.get(map, :search_type))
     search_term = Map.get(map, :search_term)
