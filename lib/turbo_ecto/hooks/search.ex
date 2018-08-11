@@ -69,7 +69,7 @@ defmodule Turbo.Ecto.Hooks.Search do
       iex> params = %{"q" => %{"name_or_body_like" => "elixir"}}
       iex> Turbo.Ecto.Hooks.Search.run(Turbo.Ecto.Product, params)
       #Ecto.Query<from p in subquery(from p in subquery(from p in Turbo.Ecto.Product),
-        or_where: like(p.body, ^"%elixir%")), where: like(p.name, ^"%elixir%")>
+        where: like(p.name, ^"%elixir%")), or_where: like(p.body, ^"%elixir%")>
 
   when use `assoc`
 
@@ -91,10 +91,11 @@ defmodule Turbo.Ecto.Hooks.Search do
       iex> params = %{"q" => %{"product_category_name_and_product_name_or_name_like" => "elixir"}}
       iex> Turbo.Ecto.Hooks.Search.run(Turbo.Ecto.Variant, params)
       #Ecto.Query<from v in subquery(from v in subquery(from v in subquery(from v in Turbo.Ecto.Variant),
-        or_where: like(v.name, ^"%elixir%")),
         join: p in assoc(v, :product),
         join: c in assoc(p, :category),
-        where: like(c.name, ^"%elixir%")), join: p in assoc(v, :product), where: like(p.name, ^"%elixir%")>
+        where: like(c.name, ^"%elixir%")),
+        join: p in assoc(v, :product),
+        where: like(p.name, ^"%elixir%")), or_where: like(v.name, ^"%elixir%")>
 
   """
   @spec run(Ecto.Query.t(), Map.t()) :: Ecto.Query.t()
@@ -104,6 +105,7 @@ defmodule Turbo.Ecto.Hooks.Search do
     search_params
     |> Map.get("q", %{})
     |> Enum.reduce(%{}, &build_search_mapbox(&1, &2, queryable))
+    |> Enum.sort_by(fn({_, b}) -> byte_size(b.search_expr) end)
     |> Enum.reduce(queryable, &search_queryable(&1, &2))
   end
 
@@ -128,7 +130,7 @@ defmodule Turbo.Ecto.Hooks.Search do
   defp build_and_condition(field) do
     field
     |> String.split(~r{(_and_)})
-    |> Enum.reduce(%{}, &(Map.put(&2, &1, :where)))
+    |> Enum.reduce(%{}, &(Map.put(&2, &1, "where")))
   end
 
   # Build with `or` expr cnndition from search params.
@@ -136,8 +138,8 @@ defmodule Turbo.Ecto.Hooks.Search do
     [hd | tl] = String.split(search_field, ~r{(_or_)})
 
     tl
-    |> Enum.reduce(search_mapbox, &(Map.put(&2, &1, :or_where)))
-    |> Map.put(hd, :where)
+    |> Enum.reduce(search_mapbox, &(Map.put(&2, &1, "or_where")))
+    |> Map.put(hd, "where")
   end
 
   # Build with assoc tables.
@@ -156,10 +158,10 @@ defmodule Turbo.Ecto.Hooks.Search do
         Map.put(mapbox, field,
           %{
             assoc: assoc,
-            search_expr:  search_expr,
-            search_term:  search_term,
             search_field: String.to_atom(search_field),
-            search_type:  String.to_atom(search_type)
+            search_expr:  search_expr,
+            search_type:  String.to_atom(search_type),
+            search_term:  search_term
           }
         )
 
@@ -177,11 +179,12 @@ defmodule Turbo.Ecto.Hooks.Search do
 
   # Generate search queryable.
   defp search_queryable({_, map}, queryable) do
+
     assoc = Map.get(map, :assoc)
     search_field = Map.get(map, :search_field)
     search_type = Map.get(map, :search_type)
     search_term = Map.get(map, :search_term)
-    search_expr = Map.get(map, :search_expr, :where)
+    search_expr = String.to_atom(Map.get(map, :search_expr))
 
     assoc
     |> Enum.reduce(from(e in subquery(queryable)), &join_by_assoc(&1, &2))
