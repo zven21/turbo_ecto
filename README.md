@@ -38,30 +38,42 @@ config :turbo_ecto, Turbo.Ecto,
 ## Examples
 
 ```elixir
-iex> params = %{
-  "q" => %{"title_like" => "hello123", "category_id_eq" => 1},
-  "s" => "inserted_at+asc",
-  "per_page" => 5, "page" => 10
-}
+  ## Category Table Structure
 
-iex> Turbo.Ecto.turboq(Product, params)
-#Ecto.Query<from t in Product, where: t.type == ^1,
-  where: like(t.title, ^"%hello123%"),
-  order_by: [asc: t.inserted_at],
-  limit: ^5, offset: ^45>
+    |  Field | Type | Comment |
+    | ------------- | ------------- | --------- |
+    | `name`  | string  |  |
 
-iex> Turbo.Ecto.turbo(Product, params)
-%{
-  datas: [Product.t()],
-  paginate: %{
-    current_page: 10,
-    next_page: 11,
-    per_page: 5,
-    prev_page: 9,
-    total_count: 100,
-    total_pages: 20
-  }
-}
+  ## Product Table Structure
+
+    |  Field | Type | Comment |
+    | ------------- | ------------- | --------- |
+    | `title`  | string  |  |
+    | `body` | text |  |
+    | `price` | float |  |
+    | `category_id` | integer | |
+    | `available` | boolean |  |
+
+  ## Variant Table Structure
+
+    |  Field | Type | Comment |
+    | ------------- | ------------- | --------- |
+    | `title`  | string  |  |
+    | `price` | float |  |
+    | `product_id` | integer | |
+
+    iex> params = %{"q" => %{"product_category_name_and_product_name_or_name_like" => "elixir", "s" => "inserted_at+asc"}}
+    iex> Turbo.Ecto.turboq(Turbo.Ecto.Variant, params)
+    #Ecto.Query<from v in subquery(from v in subquery(from v in subquery(from v in Turbo.Ecto.Variant),
+      join: p in assoc(v, :product),
+      join: c in assoc(p, :category),
+      where: like(c.name, ^"%elixir%")),
+      join: p in assoc(v, :product),
+      where: like(p.name, ^"%elixir%")),
+      or_where: like(v.name, ^"%elixir%"),
+      limit: ^10, offset: ^0,
+      order_by: [asc: v.inserted_at],
+      >
 
 ```
 
