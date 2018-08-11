@@ -64,6 +64,7 @@ config :turbo_ecto, Turbo.Ecto,
 ```elixir
 
   iex> params = %{"q" => %{"product_category_name_and_product_name_or_name_like" => "elixir", "s" => "inserted_at+asc"}}
+
   iex> Turbo.Ecto.turboq(Turbo.Ecto.Variant, params)
   #Ecto.Query<from v in subquery(from v in subquery(from v in subquery(from v in Turbo.Ecto.Variant),
     join: p in assoc(v, :product),
@@ -73,8 +74,20 @@ config :turbo_ecto, Turbo.Ecto,
     where: like(p.name, ^"%elixir%")),
     or_where: like(v.name, ^"%elixir%"),
     limit: ^10, offset: ^0,
-    order_by: [asc: v.inserted_at],
-    >
+    order_by: [asc: v.inserted_at]>
+
+  iex> Turbo.Ecto.turbo(Turbo.Ecto.Variant, params)
+  %{
+    datas: [Variant],
+    paginate: %{
+      current_page: 10,
+      next_page: 11,
+      per_page: 5,
+      prev_page: 9,
+      total_count: 100,
+      total_pages: 20
+    }
+  }
 
 ```
 
