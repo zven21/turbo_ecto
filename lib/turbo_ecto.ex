@@ -1,6 +1,52 @@
 defmodule Turbo.Ecto do
   @moduledoc """
   A rich ecto component, including search sort and paginate. https://hexdocs.pm/turbo_ecto
+
+  ## Example
+
+  ### Category Table Structure
+
+    |  Field | Type | Comment |
+    | ------------- | ------------- | --------- |
+    | `name`  | string  |  |
+
+  ### Product Table Structure
+
+    |  Field | Type | Comment |
+    | ------------- | ------------- | --------- |
+    | `title`  | string  |  |
+    | `body` | text |  |
+    | `price` | float |  |
+    | `category_id` | integer | |
+    | `available` | boolean |  |
+
+  ### Variant Table Structure
+
+    |  Field | Type | Comment |
+    | ------------- | ------------- | --------- |
+    | `title`  | string  |  |
+    | `price` | float |  |
+    | `product_id` | integer | |
+
+
+  * Input Search
+
+    ```elixir
+    url_query = http://localhost:4000/varinats?q[product_category_name_and_product_name_or_name_like]=elixir
+    ```
+
+  * Expect output:
+
+    ```elixir
+    iex> params = %{"q" => %{"product_category_name_and_product_name_or_name_like" => "elixir"}}
+    iex> Turbo.Ecto.turboq(Turbo.Ecto.Variant, params)
+    #Ecto.Query<from v in subquery(from v in subquery(from v in subquery(from v in Turbo.Ecto.Variant),
+      or_where: like(v.name, ^"%elixir%")),
+      join: p in assoc(v, :product),
+      join: c in assoc(p, :category),
+      where: like(c.name, ^"%elixir%")), join: p in assoc(v, :product), where: like(p.name, ^"%elixir%"), limit: ^10, offset: ^0>
+    ```
+
   """
 
   alias Turbo.Ecto.Hooks.{Paginate, Sort, Search}
@@ -36,9 +82,10 @@ defmodule Turbo.Ecto do
 
   ## Example
 
-      iex> params = %{"q" => %{"name_like" => "name", "body_like" => "body"}, "s" => "updated_at+asc", "per_page" => 5, "page" => 1}
+      iex> params = %{"q" => %{"name_or_body_like" => "elixir"}, "s" => "updated_at+asc", "per_page" => 5, "page" => 1}
       iex> Turbo.Ecto.turboq(Turbo.Ecto.Product, params)
-      #Ecto.Query<from p in Turbo.Ecto.Product, where: like(p.body, ^"%body%"), where: like(p.name, ^"%name%"), order_by: [asc: p.updated_at], limit: ^5, offset: ^0>
+      #Ecto.Query<from p in subquery(from p in subquery(from p in Turbo.Ecto.Product),
+        or_where: like(p.body, ^"%elixir%")), where: like(p.name, ^"%elixir%"), order_by: [asc: p.updated_at], limit: ^5, offset: ^0>
 
   """
   @spec turboq(Ecto.Query.t(), Map.t()) :: Ecto.Query.t()
@@ -69,8 +116,8 @@ defmodule Turbo.Ecto do
 
   ## Example
 
-      iex> Turbo.Ecto.searchq(Turbo.Ecto.Product, %{"q" => %{"name_like" => "q"}})
-      #Ecto.Query<from p in Turbo.Ecto.Product, where: like(p.name, ^"%q%")>
+      iex> Turbo.Ecto.searchq(Turbo.Ecto.Product, %{"q" => %{"name_like" => "elixir"}})
+      #Ecto.Query<from p in subquery(from p in Turbo.Ecto.Product), where: like(p.name, ^"%elixir%")>
 
   """
   @spec search(Ecto.Query.t(), Map.t()) :: Ecto.Query.t()

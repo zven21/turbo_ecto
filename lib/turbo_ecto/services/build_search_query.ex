@@ -56,6 +56,10 @@ defmodule Turbo.Ecto.Services.BuildSearchQuery do
       "search_expr should be one of #{inspect @search_exprs}"
   end
 
+  def search_types, do: @search_types
+  def search_exprs, do: @search_exprs
+
+
   @doc """
   Builds a searched `queryable` on top of the given `queryable` using
   `field`, `search_term` and `search_expr` when the `search_type` is `like`.
