@@ -28,7 +28,6 @@ defmodule Turbo.Ecto do
     | `price` | float |  |
     | `product_id` | integer | |
 
-
   * Input Search
 
     ```elixir
@@ -46,7 +45,6 @@ defmodule Turbo.Ecto do
       where: like(c.name, ^"%elixir%")),
       join: p in assoc(v, :product),
       where: like(p.name, ^"%elixir%")), or_where: like(v.name, ^"%elixir%"), limit: ^10, offset: ^0>
-
     ```
 
   """
@@ -76,8 +74,6 @@ defmodule Turbo.Ecto do
       paginate: get_paginate(queryable, params, opts)
     }
   end
-
-
 
   @doc """
   Returns processed queryable.
