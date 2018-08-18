@@ -39,7 +39,7 @@ defmodule Turbo.Ecto.Services.BuildSearchQuery do
                   | :present | :blank | :like | :not_like | :ilike | :not_ilike
                   | :start_with | :end_with | :true | :false | :between
 
-  @search_types ~w(like ilike eq gt lt gteq lteq)a
+  @search_types ~w(like ilike eq not_eq gt lt gteq lteq is_null between in is_true)a
   @search_exprs ~w(where or_where)a
 
   @doc """
@@ -58,7 +58,6 @@ defmodule Turbo.Ecto.Services.BuildSearchQuery do
 
   def search_types, do: @search_types
   def search_exprs, do: @search_exprs
-
 
   @doc """
   Builds a searched `queryable` on top of the given `queryable` using
@@ -177,14 +176,45 @@ defmodule Turbo.Ecto.Services.BuildSearchQuery do
   @spec handle_eq(Ecto.Query.t(), atom(), term(),
                   __MODULE__.search_expr()) :: Ecto.Query.t()
   def handle_eq(queryable, field, search_term, :where) do
-    queryable
-    |> where([..., b],
-      field(b, ^field) == ^search_term)
+    where(queryable, [..., b], field(b, ^field) == ^search_term)
   end
   def handle_eq(queryable, field, search_term, :or_where) do
-    queryable
-    |> or_where([..., b],
-      field(b, ^field) == ^search_term)
+    or_where(queryable, [..., b], field(b, ^field) == ^search_term)
+  end
+
+  @doc """
+  Builds a searched `queryable` on top of the given `queryable` using
+  `field`, `search_term` and `search_expr` when the `search_type` is `not_eq`.
+
+  Assumes that `search_expr` is in #{inspect @search_exprs}.
+
+  ## Examples
+
+  When `search_expr` is `:where`
+
+      iex> alias Turbo.Ecto.Services.BuildSearchQuery
+      iex> import Ecto.Query
+      iex> queryable = from u in "parents"
+      #Ecto.Query<from p in "parents">
+      iex> BuildSearchQuery.handle_not_eq(queryable, :field_1, "field_!", :where)
+      #Ecto.Query<from p in "parents", where: p.field_1 != ^"field_!">
+
+  When `search_expr` is `:or_where`
+
+      iex> alias Turbo.Ecto.Services.BuildSearchQuery
+      iex> import Ecto.Query
+      iex> queryable = from u in "parents"
+      #Ecto.Query<from p in "parents">
+      iex> BuildSearchQuery.handle_not_eq(queryable, :field_1, "field_!", :or_where)
+      #Ecto.Query<from p in "parents", or_where: p.field_1 != ^"field_!">
+
+  """
+  @spec handle_not_eq(Ecto.Query.t(), atom(), term(), __MODULE__.search_expr()) :: Ecto.Query.t()
+  def handle_not_eq(queryable, field, search_term, :where) do
+    where(queryable, [..., b], field(b, ^field) != ^search_term)
+  end
+  def handle_not_eq(queryable, field, search_term, :or_where) do
+    or_where(queryable, [..., b], field(b, ^field) != ^search_term)
   end
 
   @doc """
@@ -346,11 +376,8 @@ defmodule Turbo.Ecto.Services.BuildSearchQuery do
   end
 
   @doc """
-  Builds a searched `queryable` on `field` is_nil (when `term` is true),
-  or not is_nil (when `term` is false), based on `search_expr` given.
-
-  Checkout [Ecto.Query.API.like/2](https://hexdocs.pm/ecto/Ecto.Query.API.html#is_nil/1)
-  for more info.
+  Builds a searched `queryable` on top of the given `queryable` using
+  `field`, `search_term` and `search_expr` when the `search_type` is `is_null`.
 
   Assumes that `search_expr` is in #{inspect @search_exprs}.
 
@@ -399,5 +426,161 @@ defmodule Turbo.Ecto.Services.BuildSearchQuery do
     queryable
     |> or_where([..., b],
       not is_nil(field(b, ^field)))
+  end
+
+  @doc """
+  Builds a searched `queryable` on top of the given `queryable` using
+  `field`, `search_term` and `search_expr` when the `search_type` is `between`.
+
+  ## Examples
+
+  When `search_expr` is `:where`
+
+      iex> alias Turbo.Ecto.Services.BuildSearchQuery
+      iex> import Ecto.Query
+      iex> queryable = from u in "parents"
+      #Ecto.Query<from p in "parents">
+      iex> BuildSearchQuery.handle_between(queryable, :field_1, [1, 10], :where)
+      #Ecto.Query<from p in "parents", where: p.field_1 >= ^1, where: p.field_1 <= ^10>
+
+  When `search_expr` is `:or_where`
+
+  """
+  @spec handle_between(Ecto.Query.t(), atom(), Keyword.t(), __MODULE__.search_expr()) :: Ecto.Query.t()
+  def handle_between(queryable, field, [start_term, end_term] = search_term, :where) when length(search_term) == 2 do
+    queryable
+    |> where([..., b], field(b, ^field) >= ^start_term)
+    |> where([..., b], field(b, ^field) <= ^end_term)
+  end
+  def handle_between(queryable, field, [start_term, end_term] = search_term, :or_where) when length(search_term) == 2 do
+    # FIXME or_where nesting
+    # queryable
+    # |> or_where([..., b], field(b, ^field) >= ^start_term)
+    # |> or_where([..., b], field(b, ^field) <= ^end_term)
+  end
+
+  @doc """
+  Builds a searched `queryable` on top of the given `queryable` using
+  `field`, `search_term` and `search_expr` when the `search_type` is `in`.
+
+  Assumes that `search_expr` is in #{inspect @search_exprs}.
+
+  ## Examples
+
+  When `search_expr` is `:where`
+
+      iex> alias Turbo.Ecto.Services.BuildSearchQuery
+      iex> import Ecto.Query
+      iex> queryable = from u in "parents"
+      #Ecto.Query<from p in "parents">
+      iex> BuildSearchQuery.handle_in(queryable, :field_1, [1,10], :where)
+      #Ecto.Query<from p in "parents", where: p.field_1 in ^[1, 10]>
+
+  When `search_expr` is `:or_where`
+
+      iex> alias Turbo.Ecto.Services.BuildSearchQuery
+      iex> import Ecto.Query
+      iex> queryable = from u in "parents"
+      #Ecto.Query<from p in "parents">
+      iex> BuildSearchQuery.handle_in(queryable, :field_1, [1, 10], :or_where)
+      #Ecto.Query<from p in "parents", or_where: p.field_1 in ^[1, 10]>
+
+  """
+  @spec handle_in(Ecto.Query.t(), atom(), Keyword.t(), __MODULE__.search_expr()) :: Ecto.Query.t()
+  def handle_in(queryable, field, search_term, :where) do
+    where(queryable, [..., b], field(b, ^field) in ^search_term)
+  end
+  def handle_in(queryable, field, search_term, :or_where) do
+    or_where(queryable, [..., b], field(b, ^field) in ^search_term)
+  end
+
+  @doc """
+  Builds a searched `queryable` on top of the given `queryable` using
+  `field`, `search_term` and `search_expr` when the `search_type` is `is_null`.
+
+  Assumes that `search_expr` is in #{inspect @search_exprs}.
+
+  ## Examples
+
+  When `search_expr` is `:where`
+
+      iex> alias Turbo.Ecto.Services.BuildSearchQuery
+      iex> import Ecto.Query
+      iex> queryable = from u in "parents"
+      #Ecto.Query<from p in "parents">
+      iex> BuildSearchQuery.handle_is_true(queryable, :field_1, true, :where)
+      #Ecto.Query<from p in "parents", where: p.field_1 == true>
+      iex> BuildSearchQuery.handle_is_true(queryable, :field_1, false, :where)
+      #Ecto.Query<from p in "parents", where: p.field_1 == false>
+
+  When `search_expr` is `:or_where`
+
+      iex> alias Turbo.Ecto.Services.BuildSearchQuery
+      iex> import Ecto.Query
+      iex> queryable = from u in "parents"
+      #Ecto.Query<from p in "parents">
+      iex> BuildSearchQuery.handle_is_true(queryable, :field_1, true, :or_where)
+      #Ecto.Query<from p in "parents", or_where: p.field_1 == true>
+      iex> BuildSearchQuery.handle_is_true(queryable, :field_1, false, :or_where)
+      #Ecto.Query<from p in "parents", or_where: p.field_1 == false>
+
+  """
+  @spec handle_is_true(Ecto.Query.t(), atom(), boolean, __MODULE__.search_expr()) :: Ecto.Query.t()
+  def handle_is_true(queryable, field, true, :where) do
+    where(queryable, [..., b], field(b, ^field) == true)
+  end
+  def handle_is_true(queryable, field, false, :where) do
+    where(queryable, [..., b], field(b, ^field) == false)
+  end
+  def handle_is_true(queryable, field, true, :or_where) do
+    or_where(queryable, [..., b], field(b, ^field) == true)
+  end
+  def handle_is_true(queryable, field, false, :or_where) do
+    or_where(queryable, [..., b], field(b, ^field) == false)
+  end
+
+  @doc """
+  Builds a searched `queryable` on top of the given `queryable` using
+  `field`, `search_term` and `search_expr` when the `search_type` is `is_present`.
+
+  Assumes that `search_expr` is in #{inspect @search_exprs}.
+
+  ## Examples
+
+  When `search_expr` is `:where`
+
+      iex> alias Turbo.Ecto.Services.BuildSearchQuery
+      iex> import Ecto.Query
+      iex> queryable = from u in "parents"
+      #Ecto.Query<from p in "parents">
+      iex> BuildSearchQuery.handle_is_present(queryable, :field_1, true, :where)
+      #Ecto.Query<from p in "parents", where: p.field_1 == true, or_where: not(is_nil(p.field_1))>
+      iex> BuildSearchQuery.handle_is_present(queryable, :field_1, false, :where)
+      #Ecto.Query<from p in "parents", where: p.field_1 == false, or_where: is_nil(p.field_1)>
+
+  When `search_expr` is `:or_where`
+
+  """
+  def handle_is_present(queryable, field, true, :where) do
+    queryable
+    |> where([..., b], field(b, ^field) == true)
+    |> or_where([..., b], not is_nil(field(b, ^field)))
+  end
+  def handle_is_present(queryable, field, false, :where) do
+    queryable
+    |> where([..., b], field(b, ^field) == false)
+    |> or_where([..., b], is_nil(field(b, ^field)))
+  end
+  def handle_is_present(queryable, field, true, :or_where) do
+    # FIXME or_where nesting
+    # queryable
+    # |> where([..., b], field(b, ^field) == false)
+    # |> or_where([..., b], is_nil(field(b, ^field)))
+  end
+  def handle_is_present(queryable, field, false, :or_where) do
+    # FIXME or_where nesting
+    # queryable
+    # |> where([..., b], field(b, ^field) == true)
+    # |> or_where([..., b], not is_nil(field(b, ^field)))
   end
 end
