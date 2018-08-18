@@ -14,7 +14,7 @@ defmodule Turbo.Ecto do
 
     |  Field | Type | Comment |
     | ------------- | ------------- | --------- |
-    | `title`  | string  |  |
+    | `name`  | string  |  |
     | `body` | text |  |
     | `price` | float |  |
     | `category_id` | integer | |
@@ -24,7 +24,7 @@ defmodule Turbo.Ecto do
 
     |  Field | Type | Comment |
     | ------------- | ------------- | --------- |
-    | `title`  | string  |  |
+    | `name`  | string  |  |
     | `price` | float |  |
     | `product_id` | integer | |
 

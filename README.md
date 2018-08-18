@@ -47,7 +47,7 @@ config :turbo_ecto, Turbo.Ecto,
 
     |  Field | Type | Comment |
     | ------------- | ------------- | --------- |
-    | `title`  | string  |  |
+    | `name`  | string  |  |
     | `body` | text |  |
     | `price` | float |  |
     | `category_id` | integer | |
@@ -57,7 +57,7 @@ config :turbo_ecto, Turbo.Ecto,
 
     |  Field | Type | Comment |
     | ------------- | ------------- | --------- |
-    | `title`  | string  |  |
+    | `name`  | string  |  |
     | `price` | float |  |
     | `product_id` | integer | |
 
@@ -128,8 +128,8 @@ List of all possible predicates
 
 * [ ] Example website.
 * [x] Add the necessary code test.
-* [ ] Support `and` and `or` symbol. Example: e.g. `q[title_or_body_like]=hello123`, SQL: `title LIKE 'hello123' or body LIKE 'hello123'`
-* [ ] Support multi table assoc search. Example: e.g. `q[category_name_like]=cate1`. [issue](https://github.com/zven21/turbo_ecto/issues/11)
+* [x] Support `and` and `or` symbol. Example: e.g. `q[title_or_body_like]=hello123`, SQL: `title LIKE 'hello123' or body LIKE 'hello123'
+* [x] Support multi table assoc search. Example: e.g. `q[category_name_like]=cate1`. [issue](https://github.com/zven21/turbo_ecto/issues/11)
 * [ ] Support multi table assoc sort. Example: e.g. `s=category_updated_at+desc`
 
 ## Credits
