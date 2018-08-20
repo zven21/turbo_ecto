@@ -66,7 +66,7 @@ config :turbo_ecto, Turbo.Ecto,
   iex> params = %{"q" => %{"product_category_name_and_product_name_or_name_like" => "elixir", "s" => "inserted_at+asc"}}
 
   iex> Turbo.Ecto.turboq(Turbo.Ecto.Variant, params)
-  #Ecto.Query<from v in subquery(from v in subquery(from v in subquery(from v in Turbo.Ecto.Variant),
+  Ecto.Query<from v in subquery(from v in subquery(from v in subquery(from v in Turbo.Ecto.Variant),
     join: p in assoc(v, :product),
     join: c in assoc(p, :category),
     where: like(c.name, ^"%elixir%")),
@@ -118,14 +118,6 @@ List of all possible predicates
 | `*_ilike` | Contains any of | Y | (SQL: `col ILIKE '%value%'`) |
 | `*_is_true` | is true or false | N | (SQL: `col is true or col is false`) |
 | `*_between`| begin < between < end | N | e.g. `q[price_between][]=100&q[price_between][]=200` (SQL: `100 <= price <= 200`) |
-
-## Features
-
-* [ ] Example website.
-* [x] Add the necessary code test.
-* [x] Support `and` and `or` symbol. Example: e.g. `q[title_or_body_like]=hello123`, SQL: `title LIKE 'hello123' or body LIKE 'hello123'
-* [x] Support multi table assoc search. Example: e.g. `q[category_name_like]=cate1`. [issue](https://github.com/zven21/turbo_ecto/issues/11)
-* [ ] Support multi table assoc sort. Example: e.g. `s=category_updated_at+desc`
 
 ## Credits
 
