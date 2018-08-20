@@ -1,34 +1,31 @@
 defmodule Turbo.Ecto.Services.BuildSearchQuery do
   @moduledoc """
-  This is learn from
-  https://raw.githubusercontent.com/aditya7iyengar/rummage_ecto/master/lib/rummage_ecto/services/build_search_query.ex
-
   `Turbo.Ecto.Services.BuildSearchQuery` is a service module which serves the search hook.
 
   `@search_types` is a collection of all the 8 valid `search_types` that come shipped with
   `Turbo.Ecto`'s default search hook. The types are:
 
-  * `eq`: equal. (SQL: `col = 'value'`)
-  * `not_eq`: not equal. (SQL: col != 'value')
-  * `lt`: less than. (SQL: col < 1024)
-  * `lteq`: less than or equal. (SQL: col <= 1024)
-  * `gt`: greater than. (SQL: col > 1024)
-  * `gteq`: greater than or equal. (SQL: col >= 1024)
-  * `present`: not null and not empty. (SQL: col is not null AND col != '')
-  * `blank`: is null or empty. (SQL: col is null OR col = '')
-  * `is_null`: is null or not null (SQL: col is null)
-  * `like`: contains trem value. (SQL: col like "%value%")
-  * `not_like`: not contains value. (SQL: col not like '%value%')
-  * `ilike`: contains value in a case insensitive fashion. (SQL: )
-  * `not_ilike`: not contains value in a case insensitive fashion. (SQL:
-  * `in` contains. (SQL: col in ('1024', '1025'))
-  * `not_in` not contains. (SQL: col not in ('1024', '1025'))
-  * `start_with` start with. (SQL: col like 'value%')
-  * `not_start_with` not start with. (SQL: col not like 'value%')
-  * `end_with` end with. (SQL: col like '%value')
-  * `not_end_with` (SQL: col not like '%value')
-  * `is_true` is true. (SQL: col is true)
-  * `between`: between begin and end. (SQL: begin <= col <= end)
+  * [x] `eq`: equal. (SQL: `col = 'value'`)
+  * [x] `not_eq`: not equal. (SQL: col != 'value')
+  * [x] `lt`: less than. (SQL: col < 1024)
+  * [x] `lteq`: less than or equal. (SQL: col <= 1024)
+  * [x] `gt`: greater than. (SQL: col > 1024)
+  * [x] `gteq`: greater than or equal. (SQL: col >= 1024)
+  * [x] `is_present`: not null and not empty. (SQL: col is not null AND col != '')
+  * [ ] `blank`: is null or empty. (SQL: col is null OR col = '')
+  * [x] `is_null`: is null or not null (SQL: col is null)
+  * [x] `like`: contains trem value. (SQL: col like "%value%")
+  * [ ] `not_like`: not contains value. (SQL: col not like '%value%')
+  * [x] `ilike`: contains value in a case insensitive fashion. (SQL: )
+  * [ ] `not_ilike`: not contains value in a case insensitive fashion. (SQL:
+  * [x] `in` contains. (SQL: col in ('1024', '1025'))
+  * [ ] `not_in` not contains. (SQL: col not in ('1024', '1025'))
+  * [ ] `start_with` start with. (SQL: col like 'value%')
+  * [ ] `not_start_with` not start with. (SQL: col not like 'value%')
+  * [ ] `end_with` end with. (SQL: col like '%value')
+  * [ ] `not_end_with` (SQL: col not like '%value')
+  * [x] `is_true` is true. (SQL: col is true)
+  * [x] `between`: between begin and end. (SQL: begin <= col <= end)
   """
 
   import Ecto.Query
@@ -39,7 +36,7 @@ defmodule Turbo.Ecto.Services.BuildSearchQuery do
                   | :present | :blank | :like | :not_like | :ilike | :not_ilike
                   | :start_with | :end_with | :true | :false | :between
 
-  @search_types ~w(like ilike eq not_eq gt lt gteq lteq is_null between in is_true)a
+  @search_types ~w(like ilike eq not_eq gt lt gteq lteq is_null between in is_true is_present)a
   @search_exprs ~w(where or_where)a
 
   @doc """
@@ -441,22 +438,26 @@ defmodule Turbo.Ecto.Services.BuildSearchQuery do
       iex> queryable = from u in "parents"
       #Ecto.Query<from p in "parents">
       iex> BuildSearchQuery.handle_between(queryable, :field_1, [1, 10], :where)
-      #Ecto.Query<from p in "parents", where: p.field_1 >= ^1, where: p.field_1 <= ^10>
+      #Ecto.Query<from p in "parents", where: p.field_1 >= ^1 and p.field_1 <= ^10>
 
   When `search_expr` is `:or_where`
+
+      iex> alias Turbo.Ecto.Services.BuildSearchQuery
+      iex> import Ecto.Query
+      iex> queryable = from u in "parents"
+      #Ecto.Query<from p in "parents">
+      iex> BuildSearchQuery.handle_between(queryable, :field_1, [1, 10], :or_where)
+      #Ecto.Query<from p in "parents", or_where: p.field_1 >= ^1 and p.field_1 <= ^10>
 
   """
   @spec handle_between(Ecto.Query.t(), atom(), Keyword.t(), __MODULE__.search_expr()) :: Ecto.Query.t()
   def handle_between(queryable, field, [start_term, end_term] = search_term, :where) when length(search_term) == 2 do
     queryable
-    |> where([..., b], field(b, ^field) >= ^start_term)
-    |> where([..., b], field(b, ^field) <= ^end_term)
+    |> where([..., b], field(b, ^field) >= ^start_term and field(b, ^field) <= ^end_term)
   end
   def handle_between(queryable, field, [start_term, end_term] = search_term, :or_where) when length(search_term) == 2 do
-    # FIXME or_where nesting
-    # queryable
-    # |> or_where([..., b], field(b, ^field) >= ^start_term)
-    # |> or_where([..., b], field(b, ^field) <= ^end_term)
+    queryable
+    |> or_where([..., b], field(b, ^field) >= ^start_term and field(b, ^field) <= ^end_term)
   end
 
   @doc """
@@ -554,33 +555,33 @@ defmodule Turbo.Ecto.Services.BuildSearchQuery do
       iex> queryable = from u in "parents"
       #Ecto.Query<from p in "parents">
       iex> BuildSearchQuery.handle_is_present(queryable, :field_1, true, :where)
-      #Ecto.Query<from p in "parents", where: p.field_1 == true, or_where: not(is_nil(p.field_1))>
+      #Ecto.Query<from p in "parents", where: p.field_1 == true or not(is_nil(p.field_1))>
       iex> BuildSearchQuery.handle_is_present(queryable, :field_1, false, :where)
-      #Ecto.Query<from p in "parents", where: p.field_1 == false, or_where: is_nil(p.field_1)>
+      #Ecto.Query<from p in "parents", where: p.field_1 == false or is_nil(p.field_1)>
 
   When `search_expr` is `:or_where`
 
+      iex> alias Turbo.Ecto.Services.BuildSearchQuery
+      iex> import Ecto.Query
+      iex> queryable = from u in "parents"
+      #Ecto.Query<from p in "parents">
+      iex> BuildSearchQuery.handle_is_present(queryable, :field_1, true, :or_where)
+      #Ecto.Query<from p in "parents", or_where: p.field_1 == true or not(is_nil(p.field_1))>
+      iex> BuildSearchQuery.handle_is_present(queryable, :field_1, false, :or_where)
+      #Ecto.Query<from p in "parents", or_where: p.field_1 == false or is_nil(p.field_1)>
+
   """
+  @spec handle_is_present(Ecto.Query.t(), atom(), boolean, __MODULE__.search_expr()) :: Ecto.Query.t()
   def handle_is_present(queryable, field, true, :where) do
-    queryable
-    |> where([..., b], field(b, ^field) == true)
-    |> or_where([..., b], not is_nil(field(b, ^field)))
+    where(queryable, [..., b], field(b, ^field) == true or not is_nil(field(b, ^field)))
   end
   def handle_is_present(queryable, field, false, :where) do
-    queryable
-    |> where([..., b], field(b, ^field) == false)
-    |> or_where([..., b], is_nil(field(b, ^field)))
+    where(queryable, [..., b], field(b, ^field) == false or is_nil(field(b, ^field)))
   end
   def handle_is_present(queryable, field, true, :or_where) do
-    # FIXME or_where nesting
-    # queryable
-    # |> where([..., b], field(b, ^field) == false)
-    # |> or_where([..., b], is_nil(field(b, ^field)))
+    or_where(queryable, [..., b], field(b, ^field) == true or not is_nil(field(b, ^field)))
   end
   def handle_is_present(queryable, field, false, :or_where) do
-    # FIXME or_where nesting
-    # queryable
-    # |> where([..., b], field(b, ^field) == true)
-    # |> or_where([..., b], not is_nil(field(b, ^field)))
+    or_where(queryable, [..., b], field(b, ^field) == false or is_nil(field(b, ^field)))
   end
 end

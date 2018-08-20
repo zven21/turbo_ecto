@@ -112,13 +112,8 @@ List of all possible predicates
 | `*_gt` | greater than | Y | (SQL: `col > 1024`) |
 | `*_gteq` | greater than or equal | Y | greater than or equal. (SQL: `col >= 1024`) |
 | `*_present` | not null and not empty | N | Only compatible with string columns. Example: `q[name_present]=1` (SQL: `col is not null AND col != ''`) |
-| `*_blank` | is null or empty. | N | (SQL: `col is null OR col = ''`) |
 | `*_is_null` | is null true or false | N | (SQL: `col is null` or `col is not null`) |
 | `*_in` | match any values in array | N | e.g. `q[name_in][]=Alice&q[name_in][]=Bob` (SQL: `name in ('Alice', 'Bob')`)|
-| `*_start_with` | Starts with | N | (SQL: `col LIKE 'value%'`) |
-| `*_not_start_with` | Does not start with | N | |
-| `*_end_with` | Ends with | N | (SQL: `col LIKE '%value'`)|
-| `*_not_end_with` | Does not end with | N | |
 | `*_like` | Contains value | Y | (SQL: `col LIKE '%value%'`) |
 | `*_ilike` | Contains any of | Y | (SQL: `col ILIKE '%value%'`) |
 | `*_is_true` | is true or false | N | (SQL: `col is true or col is false`) |
