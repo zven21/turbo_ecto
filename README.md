@@ -66,7 +66,7 @@ config :turbo_ecto, Turbo.Ecto,
   iex> params = %{"q" => %{"product_category_name_and_product_name_or_name_like" => "elixir", "s" => "inserted_at+asc"}}
 
   iex> Turbo.Ecto.turboq(Turbo.Ecto.Variant, params)
-  #Ecto.Query<from v in subquery(from v in subquery(from v in subquery(from v in Turbo.Ecto.Variant),
+  Ecto.Query<from v in subquery(from v in subquery(from v in subquery(from v in Turbo.Ecto.Variant),
     join: p in assoc(v, :product),
     join: c in assoc(p, :category),
     where: like(c.name, ^"%elixir%")),
@@ -112,25 +112,12 @@ List of all possible predicates
 | `*_gt` | greater than | Y | (SQL: `col > 1024`) |
 | `*_gteq` | greater than or equal | Y | greater than or equal. (SQL: `col >= 1024`) |
 | `*_present` | not null and not empty | N | Only compatible with string columns. Example: `q[name_present]=1` (SQL: `col is not null AND col != ''`) |
-| `*_blank` | is null or empty. | N | (SQL: `col is null OR col = ''`) |
 | `*_is_null` | is null true or false | N | (SQL: `col is null` or `col is not null`) |
 | `*_in` | match any values in array | N | e.g. `q[name_in][]=Alice&q[name_in][]=Bob` (SQL: `name in ('Alice', 'Bob')`)|
-| `*_start_with` | Starts with | N | (SQL: `col LIKE 'value%'`) |
-| `*_not_start_with` | Does not start with | N | |
-| `*_end_with` | Ends with | N | (SQL: `col LIKE '%value'`)|
-| `*_not_end_with` | Does not end with | N | |
 | `*_like` | Contains value | Y | (SQL: `col LIKE '%value%'`) |
 | `*_ilike` | Contains any of | Y | (SQL: `col ILIKE '%value%'`) |
 | `*_is_true` | is true or false | N | (SQL: `col is true or col is false`) |
 | `*_between`| begin < between < end | N | e.g. `q[price_between][]=100&q[price_between][]=200` (SQL: `100 <= price <= 200`) |
-
-## Features
-
-* [ ] Example website.
-* [x] Add the necessary code test.
-* [x] Support `and` and `or` symbol. Example: e.g. `q[title_or_body_like]=hello123`, SQL: `title LIKE 'hello123' or body LIKE 'hello123'
-* [x] Support multi table assoc search. Example: e.g. `q[category_name_like]=cate1`. [issue](https://github.com/zven21/turbo_ecto/issues/11)
-* [ ] Support multi table assoc sort. Example: e.g. `s=category_updated_at+desc`
 
 ## Credits
 
