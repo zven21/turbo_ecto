@@ -12,17 +12,18 @@ defmodule Turbo.Ecto.Factory do
 
   def product_factory do
     name = sequence(:name, &"Use ExMachina! (Part #{&1})")
+
     %Turbo.Ecto.Product{
       name: name,
       body: "body",
-      category: build(:category),
+      category: build(:category)
     }
   end
 
   def variant_factory do
     %Turbo.Ecto.Variant{
       name: "Variant 1",
-      product: build(:product),
+      product: build(:product)
     }
   end
 end

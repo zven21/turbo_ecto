@@ -13,7 +13,7 @@ defmodule Turbo.Ecto.MixProject do
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       package: package(),
-      elixirc_paths: elixirc_paths(Mix.env)
+      elixirc_paths: elixirc_paths(Mix.env())
     ]
   end
 
@@ -45,5 +45,5 @@ defmodule Turbo.Ecto.MixProject do
   end
 
   defp elixirc_paths(:test), do: ["lib", "priv", "test/support"]
-  defp elixirc_paths(_),     do: ["lib"]
+  defp elixirc_paths(_), do: ["lib"]
 end

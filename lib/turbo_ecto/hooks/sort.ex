@@ -46,5 +46,6 @@ defmodule Turbo.Ecto.Hooks.Sort do
       queryable
     end
   end
+
   defp build_sort(_, queryable), do: queryable
 end
