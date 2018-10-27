@@ -39,12 +39,7 @@ defmodule Turbo.Ecto do
     ```elixir
     iex> params = %{"q" => %{"product_category_name_and_product_name_or_name_like" => "elixir"}}
     iex> Turbo.Ecto.turboq(Turbo.Ecto.Variant, params)
-    #Ecto.Query<from v in subquery(from v in subquery(from v in subquery(from v in Turbo.Ecto.Variant),
-      join: p in assoc(v, :product),
-      join: c in assoc(p, :category),
-      where: like(c.name, ^"%elixir%")),
-      join: p in assoc(v, :product),
-      where: like(p.name, ^"%elixir%")), or_where: like(v.name, ^"%elixir%"), limit: ^10, offset: ^0>
+    #Ecto.Query<from v in Turbo.Ecto.Variant, join: p0 in assoc(v, :product), join: p1 in assoc(v, :product), join: c in assoc(p1, :category), or_where: like(v.name, ^\"%elixir%\"), where: like(p0.name, ^\"%elixir%\"), where: like(c.name, ^\"%elixir%\"), limit: ^10, offset: ^0>
     ```
 
   """
@@ -82,8 +77,7 @@ defmodule Turbo.Ecto do
 
       iex> params = %{"q" => %{"name_or_body_like" => "elixir"}, "s" => "updated_at+asc", "per_page" => 5, "page" => 1}
       iex> Turbo.Ecto.turboq(Turbo.Ecto.Product, params)
-      #Ecto.Query<from p in subquery(from p in subquery(from p in Turbo.Ecto.Product),
-        where: like(p.name, ^"%elixir%")), or_where: like(p.body, ^"%elixir%"), order_by: [asc: p.updated_at], limit: ^5, offset: ^0>
+      #Ecto.Query<from p in Turbo.Ecto.Product, or_where: like(p.body, ^\"%elixir%\"), where: like(p.name, ^\"%elixir%\"), order_by: [asc: p.updated_at], limit: ^5, offset: ^0>
 
   """
   @spec turboq(Ecto.Query.t(), Map.t()) :: Ecto.Query.t()
@@ -115,7 +109,7 @@ defmodule Turbo.Ecto do
   ## Example
 
       iex> Turbo.Ecto.searchq(Turbo.Ecto.Product, %{"q" => %{"name_like" => "elixir"}})
-      #Ecto.Query<from p in subquery(from p in Turbo.Ecto.Product), where: like(p.name, ^"%elixir%")>
+      #Ecto.Query<from p in Turbo.Ecto.Product, where: like(p.name, ^\"%elixir%\")>
 
   """
   @spec search(Ecto.Query.t(), Map.t()) :: Ecto.Query.t()
