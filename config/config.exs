@@ -1,7 +1,6 @@
 use Mix.Config
 
-config :logger, :console,
-  level: :error
+config :logger, :console, level: :error
 
 config :turbo_ecto, Turbo.Ecto,
   repo: Turbo.Ecto.Repo,

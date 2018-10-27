@@ -105,7 +105,7 @@ defmodule Turbo.Ecto.Hooks.Search do
     search_params
     |> Map.get("q", %{})
     |> Enum.reduce(%{}, &build_search_mapbox(&1, &2, queryable))
-    |> Enum.sort_by(fn({_, b}) -> byte_size(b.search_expr) end)
+    |> Enum.sort_by(fn {_, b} -> byte_size(b.search_expr) end)
     |> Enum.reduce(queryable, &search_queryable(&1, &2))
   end
 
@@ -121,8 +121,8 @@ defmodule Turbo.Ecto.Hooks.Search do
       |> Enum.reduce(%{}, &build_or_condition(&1, &2))
       |> Enum.reduce(mapbox, &build_assoc_query(&1, &2, search_term, search_type, queryable))
     else
-      raise "Unknown search matchers, #{inspect search_field_and_type}\n" <>
-      "it should be endwith one of #{inspect decorator_search_types()}, click: https://github.com/zven21/turbo_ecto#search-matchers"
+      raise "Unknown search matchers, #{inspect(search_field_and_type)}\n" <>
+              "it should be endwith one of #{inspect(decorator_search_types())}, click: https://github.com/zven21/turbo_ecto#search-matchers"
     end
   end
 
@@ -130,7 +130,7 @@ defmodule Turbo.Ecto.Hooks.Search do
   defp build_and_condition(field) do
     field
     |> String.split(~r{(_and_)})
-    |> Enum.reduce(%{}, &(Map.put(&2, &1, "where")))
+    |> Enum.reduce(%{}, &Map.put(&2, &1, "where"))
   end
 
   # Build with `or` expr cnndition from search params.
@@ -138,15 +138,39 @@ defmodule Turbo.Ecto.Hooks.Search do
     [hd | tl] = String.split(search_field, ~r{(_or_)})
 
     tl
-    |> Enum.reduce(search_mapbox, &(Map.put(&2, &1, "or_where")))
+    |> Enum.reduce(search_mapbox, &Map.put(&2, &1, "or_where"))
     |> Map.put(hd, "where")
   end
 
   # Build with assoc tables.
-  defp build_assoc_query({search_field, search_expr}, mapbox, search_term, search_type, queryable),
-    do: do_build_assoc_query(search_field, search_field, search_type, search_term, search_expr, queryable, mapbox)
+  defp build_assoc_query(
+         {search_field, search_expr},
+         mapbox,
+         search_term,
+         search_type,
+         queryable
+       ),
+       do:
+         do_build_assoc_query(
+           search_field,
+           search_field,
+           search_type,
+           search_term,
+           search_expr,
+           queryable,
+           mapbox
+         )
 
-  defp do_build_assoc_query(search_field, field, search_type, search_term, search_expr, queryable, mapbox, assoc \\ []) do
+  defp do_build_assoc_query(
+         search_field,
+         field,
+         search_type,
+         search_term,
+         search_expr,
+         queryable,
+         mapbox,
+         assoc \\ []
+       ) do
     # Returns string of the queryable's associations.
     assoc_tables = Enum.join(Utils.schema_from_query(queryable).__schema__(:associations), "|")
 
@@ -155,31 +179,41 @@ defmodule Turbo.Ecto.Hooks.Search do
 
     cond do
       String.to_atom(search_field) in Utils.schema_from_query(queryable).__schema__(:fields) ->
-        Map.put(mapbox, field,
-          %{
-            assoc: assoc,
-            search_field: String.to_atom(search_field),
-            search_expr:  search_expr,
-            search_type:  String.to_atom(search_type),
-            search_term:  search_term
-          }
-        )
+        Map.put(mapbox, field, %{
+          assoc: assoc,
+          search_field: String.to_atom(search_field),
+          search_expr: search_expr,
+          search_type: String.to_atom(search_type),
+          search_term: search_term
+        })
 
       Regex.match?(association_regex, search_field) ->
         [_, assoc_table, search_field] = Regex.run(split_regex, search_field)
         assoc_table = String.to_atom(assoc_table)
-        assoc_queryable = Utils.schema_from_query(queryable).__schema__(:association, assoc_table).related
+
+        assoc_queryable =
+          Utils.schema_from_query(queryable).__schema__(:association, assoc_table).related
+
         assoc = assoc ++ [assoc_table]
         # `search_field` may be in the assco table
-        do_build_assoc_query(search_field, field, search_type, search_term, search_expr, assoc_queryable, mapbox, assoc)
+        do_build_assoc_query(
+          search_field,
+          field,
+          search_type,
+          search_term,
+          search_expr,
+          assoc_queryable,
+          mapbox,
+          assoc
+        )
 
-      true -> mapbox
+      true ->
+        mapbox
     end
   end
 
   # Generate search queryable.
   defp search_queryable({_, map}, queryable) do
-
     assoc = Map.get(map, :assoc)
     search_field = Map.get(map, :search_field)
     search_type = Map.get(map, :search_type)
@@ -190,6 +224,7 @@ defmodule Turbo.Ecto.Hooks.Search do
     |> Enum.reduce(from(e in subquery(queryable)), &join_by_assoc(&1, &2))
     |> BuildSearchQuery.run(search_field, {search_expr, search_type}, search_term)
   end
+
   defp search_queryable(_, queryable), do: queryable
 
   # Helper function which handles associations in a query with a join type.
@@ -197,5 +232,5 @@ defmodule Turbo.Ecto.Hooks.Search do
     join(queryable, :inner, [..., p1], p2 in assoc(p1, ^assoc))
   end
 
-  defp decorator_search_types, do: BuildSearchQuery.search_types |> Enum.join("|")
+  defp decorator_search_types, do: BuildSearchQuery.search_types() |> Enum.join("|")
 end

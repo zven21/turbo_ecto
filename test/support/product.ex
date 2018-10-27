@@ -4,13 +4,13 @@ defmodule Turbo.Ecto.Product do
   use Ecto.Schema
 
   schema "products" do
-    field :name, :string
-    field :body, :string
-    field :price, :float
-    field :available, :boolean
+    field(:name, :string)
+    field(:body, :string)
+    field(:price, :float)
+    field(:available, :boolean)
 
-    belongs_to :category, Turbo.Ecto.Category
-    has_many :variants, Turbo.Ecto.Variant
+    belongs_to(:category, Turbo.Ecto.Category)
+    has_many(:variants, Turbo.Ecto.Variant)
 
     timestamps()
   end

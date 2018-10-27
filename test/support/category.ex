@@ -4,9 +4,9 @@ defmodule Turbo.Ecto.Category do
   use Ecto.Schema
 
   schema "categories" do
-    field :name, :string
+    field(:name, :string)
 
-    has_many :products, Turbo.Ecto.Product
+    has_many(:products, Turbo.Ecto.Product)
 
     timestamps()
   end

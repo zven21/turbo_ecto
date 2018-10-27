@@ -196,7 +196,7 @@ defmodule Turbo.Ecto do
   """
   # @spec get_paginate(Ecto.Query.t(), Map.t(), Keyword.t()) :: Map.t()
   def get_paginate(queryable, params, opts \\ []) do
-    build_opts = Keyword.put_new(opts, :repo, TConfig.repo)
+    build_opts = Keyword.put_new(opts, :repo, TConfig.repo())
     Paginate.get_paginate(queryable, params, build_opts)
   end
 
@@ -204,7 +204,8 @@ defmodule Turbo.Ecto do
   defp run_hook(hook, queryable, params), do: apply(hook, :run, [queryable, params])
 
   defp handle_query(queryable, opts) do
-    build_opts = Keyword.put_new(opts, :repo, TConfig.repo)
+    build_opts = Keyword.put_new(opts, :repo, TConfig.repo())
+
     case Keyword.get(build_opts, :repo) do
       nil -> raise "Expected key `repo` in `opts`, got #{inspect(opts)}"
       repo -> apply(repo, :all, [queryable])

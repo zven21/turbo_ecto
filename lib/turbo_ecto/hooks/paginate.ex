@@ -62,13 +62,15 @@ defmodule Turbo.Ecto.Hooks.Paginate do
 
     total_pages =
       total_count
-      |> (&(&1/per_page)).()
+      |> (&(&1 / per_page)).()
       |> Float.ceil()
       |> trunc()
 
     current_page = Map.get(formated_params, :page)
-    next_page = if (total_pages - current_page) >= 1, do: current_page + 1, else: nil
-    prev_page = if total_pages >= current_page && current_page > 1, do: current_page - 1, else: nil
+    next_page = if total_pages - current_page >= 1, do: current_page + 1, else: nil
+
+    prev_page =
+      if total_pages >= current_page && current_page > 1, do: current_page - 1, else: nil
 
     %{
       current_page: current_page,
@@ -92,7 +94,7 @@ defmodule Turbo.Ecto.Hooks.Paginate do
 
   defp get_count(query, repo) do
     repo
-    |> apply(:all, [distinct(query, :true)])
+    |> apply(:all, [distinct(query, true)])
     |> Enum.count()
   end
 end
