@@ -11,6 +11,7 @@ defmodule Turbo.Ecto.Variant do
     field(:height, :string)
 
     belongs_to(:product, Turbo.Ecto.Product)
+    has_many(:prototypes, Turbo.Ecto.ProtoType)
 
     timestamps()
   end
