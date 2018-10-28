@@ -1,7 +1,7 @@
 defmodule Turbo.Ecto.MixProject do
   use Mix.Project
 
-  @version "0.1.8"
+  @version "0.2.0"
   @github "https://github.com/zven21/turbo_ecto"
 
   def project do
@@ -13,7 +13,14 @@ defmodule Turbo.Ecto.MixProject do
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       package: package(),
-      elixirc_paths: elixirc_paths(Mix.env())
+      elixirc_paths: elixirc_paths(Mix.env()),
+      test_coverage: [tool: ExCoveralls],
+      preferred_cli_env: [
+        coveralls: :test,
+        "coveralls.detail": :test,
+        "coveralls.post": :test,
+        "coveralls.html": :test
+      ]
     ]
   end
 
@@ -31,6 +38,7 @@ defmodule Turbo.Ecto.MixProject do
       {:ecto, "~> 2.2"},
       {:postgrex, ">= 0.0.0", only: :test},
       {:ex_machina, "~> 2.2", only: :test},
+      {:excoveralls, "~> 0.10", only: :test},
       {:credo, "~> 0.10.0", only: [:dev, :test], runtime: false}
     ]
   end
