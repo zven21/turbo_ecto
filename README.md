@@ -63,18 +63,14 @@ config :turbo_ecto, Turbo.Ecto,
 
 ```elixir
 
-  iex> params = %{"q" => %{"product_category_name_and_product_name_or_name_like" => "elixir", "s" => "inserted_at+asc"}}
+  iex> params = %{"q" => %{"product_category_name_and_product_name_or_name_like" => "elixir"}, "s" => "inserted_at+asc"}
 
   iex> Turbo.Ecto.turboq(Turbo.Ecto.Variant, params)
-  Ecto.Query<from v in subquery(from v in subquery(from v in subquery(from v in Turbo.Ecto.Variant),
-    join: p in assoc(v, :product),
-    join: c in assoc(p, :category),
-    where: like(c.name, ^"%elixir%")),
-    join: p in assoc(v, :product),
-    where: like(p.name, ^"%elixir%")),
-    or_where: like(v.name, ^"%elixir%"),
-    limit: ^10, offset: ^0,
-    order_by: [asc: v.inserted_at]>
+  #Ecto.Query<from v in Turbo.Ecto.Variant, join: p0 in assoc(v, :product),
+  join: p1 in assoc(v, :product), join: c in assoc(p1, :category),
+  or_where: like(v.name, ^"%elixir%"), where: like(p0.name, ^"%elixir%"),
+  where: like(c.name, ^"%elixir%"), order_by: [asc: c.inserted_at], limit: ^10,
+  offset: ^0>
 
   iex> Turbo.Ecto.turbo(Turbo.Ecto.Variant, params)
   %{
@@ -106,18 +102,18 @@ List of all possible predicates
 | Predicate | Description | Finish | Note
 | ------------- | ------------- |-------- |-------- |
 | `*_eq`  | equal  | Y | (SQL: `col = 'value'`) |
-| `*_not_eq` | not equal | N | (SQL: `col != 'value'`) |
+| `*_not_eq` | not equal | Y | (SQL: `col != 'value'`) |
 | `*_lt` | less than | Y | (SQL: `col < 1024`) |
 | `*_lteq` | less than or equal | Y |  (SQL: `col <= 1024`) |
 | `*_gt` | greater than | Y | (SQL: `col > 1024`) |
 | `*_gteq` | greater than or equal | Y | greater than or equal. (SQL: `col >= 1024`) |
-| `*_present` | not null and not empty | N | Only compatible with string columns. Example: `q[name_present]=1` (SQL: `col is not null AND col != ''`) |
-| `*_is_null` | is null true or false | N | (SQL: `col is null` or `col is not null`) |
-| `*_in` | match any values in array | N | e.g. `q[name_in][]=Alice&q[name_in][]=Bob` (SQL: `name in ('Alice', 'Bob')`)|
+| `*_present` | not null and not empty | Y | Only compatible with string columns. Example: `q[name_present]=1` (SQL: `col is not null AND col != ''`) |
+| `*_is_null` | is null true or false | Y | (SQL: `col is null` or `col is not null`) |
+| `*_in` | match any values in array | Y | e.g. `q[name_in][]=Alice&q[name_in][]=Bob` (SQL: `name in ('Alice', 'Bob')`)|
 | `*_like` | Contains value | Y | (SQL: `col LIKE '%value%'`) |
 | `*_ilike` | Contains any of | Y | (SQL: `col ILIKE '%value%'`) |
-| `*_is_true` | is true or false | N | (SQL: `col is true or col is false`) |
-| `*_between`| begin < between < end | N | e.g. `q[price_between][]=100&q[price_between][]=200` (SQL: `100 <= price <= 200`) |
+| `*_is_true` | is true or false | Y | (SQL: `col is true or col is false`) |
+| `*_between`| begin < between < end | Y | e.g. `q[price_between][]=100&q[price_between][]=200` (SQL: `100 <= price <= 200`) |
 
 ## Credits
 
