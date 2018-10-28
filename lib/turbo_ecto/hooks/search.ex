@@ -61,13 +61,13 @@ defmodule Turbo.Ecto.Hooks.Search do
 
       iex> params = %{"q" => %{"name_and_body_like" => "elixir"}}
       iex> Turbo.Ecto.Hooks.Search.run(Turbo.Ecto.Product, params)
-      #Ecto.Query<from p in Turbo.Ecto.Product, where: like(p.body, ^"%elixir%"), where: like(p.name, ^"%elixir%")>
+      #Ecto.Query<from p in Turbo.Ecto.Product, where: like(p.name, ^\"%elixir%\"), where: like(p.body, ^\"%elixir%\")>
 
   when use `or` symbol condition
 
       iex> params = %{"q" => %{"name_or_body_like" => "elixir"}}
       iex> Turbo.Ecto.Hooks.Search.run(Turbo.Ecto.Product, params)
-      #Ecto.Query<from p in Turbo.Ecto.Product, or_where: like(p.body, ^\"%elixir%\"), where: like(p.name, ^\"%elixir%\")>
+      #Ecto.Query<from p in Turbo.Ecto.Product, where: like(p.name, ^\"%elixir%\"), or_where: like(p.body, ^\"%elixir%\")>
 
   when use `assoc`
 
@@ -79,7 +79,7 @@ defmodule Turbo.Ecto.Hooks.Search do
 
       iex> params = %{"q" => %{"category_name_or_name_and_body_like" => "elixir"}}
       iex> Turbo.Ecto.Hooks.Search.run(Turbo.Ecto.Product, params)
-      #Ecto.Query<from p in Turbo.Ecto.Product, join: c in assoc(p, :category), where: like(p.body, ^\"%elixir%\"), or_where: like(p.name, ^\"%elixir%\"), where: like(c.name, ^\"%elixir%\")>
+      #Ecto.Query<from p in Turbo.Ecto.Product, join: c in assoc(p, :category), or_where: like(p.name, ^\"%elixir%\"), where: like(p.body, ^\"%elixir%\"), where: like(c.name, ^\"%elixir%\")>
 
   when multi association && `or` && `and` condition
 
@@ -91,13 +91,13 @@ defmodule Turbo.Ecto.Hooks.Search do
 
       iex> params = %{"q" => %{"product_category_name_and_product_name_or_name_like" => "elixir", "prototypes_name_eq" => "1"}}
       iex> Turbo.Ecto.Hooks.Search.run(Turbo.Ecto.Variant, params)
-      #Ecto.Query<from v in Turbo.Ecto.Variant, join: p0 in assoc(v, :product), join: p1 in assoc(v, :prototypes), join: p2 in assoc(v, :product), join: c in assoc(p2, :category), or_where: like(v.name, ^\"%elixir%\"), where: like(p0.name, ^\"%elixir%\"), where: p1.name == ^\"1\", where: like(c.name, ^\"%elixir%\")>
+      #Ecto.Query<from v in Turbo.Ecto.Variant, join: p0 in assoc(v, :prototypes), join: p1 in assoc(v, :product), join: p2 in assoc(v, :product), join: c in assoc(p2, :category), or_where: like(v.name, ^\"%elixir%\"), where: p0.name == ^\"1\", where: like(p1.name, ^\"%elixir%\"), where: like(c.name, ^\"%elixir%\")>
 
   """
 
   defmodule QueryExpr do
     @moduledoc """
-    QueryExpr
+    QueryExpr Module.
     """
     defstruct [:assoc, :search_field, :search_type, :search_expr, :search_term]
   end
@@ -107,19 +107,17 @@ defmodule Turbo.Ecto.Hooks.Search do
 
   defp handle_search(queryable, search_params) do
     # TODO need to remove Enum.sort_by
-    # if not Enum.sort_by, queryable join will be problems.
-    search_boxes = []
-
+    # if not Enum.sort_by, queryable join will has problems.
     search_params
     |> Map.get("q", %{})
-    |> Enum.reduce(search_boxes, &build_search_boxes(&1, &2, queryable))
+    |> Enum.reduce([], &build_query_exprs(&1, &2, queryable))
     |> Enum.sort_by(fn {_, b} -> length(b.assoc) end)
     |> Enum.reduce(queryable, &search_queryable(&1, &2))
   end
 
-  # Generate search mapbox from search params.
-  def build_search_boxes({search_field_and_type, search_term}, search_boxes, queryable) do
-    search_regex = ~r/([a-z1-9_]+)_(#{decorator_search_types()})$/
+  # Generate search query_exprs from search params.
+  def build_query_exprs({search_field_and_type, search_term}, query_exprs, queryable) do
+    search_regex = ~r/(\S+)_(#{decorator_search_types()})$/
 
     if Regex.match?(search_regex, search_field_and_type) do
       [_, match, search_type] = Regex.run(search_regex, search_field_and_type)
@@ -128,7 +126,7 @@ defmodule Turbo.Ecto.Hooks.Search do
       |> build_and_condition()
       |> Enum.reduce(%{}, &build_or_condition(&1, &2))
       |> Enum.reduce(
-        search_boxes,
+        query_exprs,
         &build_assoc_query(&1, &2, search_term, search_type, queryable)
       )
     else
@@ -141,7 +139,7 @@ defmodule Turbo.Ecto.Hooks.Search do
   defp build_and_condition(field) do
     field
     |> String.split(~r{(_and_)})
-    |> Enum.reduce(%{}, &Map.put(&2, &1, "where"))
+    |> Enum.reduce(%{}, &Map.put(&2, &1, :where))
   end
 
   # Build with `or` expr cnndition from search params.
@@ -149,13 +147,19 @@ defmodule Turbo.Ecto.Hooks.Search do
     [hd | tl] = String.split(search_field, ~r{(_or_)})
 
     tl
-    |> Enum.reduce(search_mapbox, &Map.put(&2, &1, "or_where"))
-    |> Map.put(hd, "where")
+    |> Enum.reduce(search_mapbox, &Map.put(&2, &1, :or_where))
+    |> Map.put(hd, :where)
   end
 
   # Build with assoc tables.
-  defp build_assoc_query({search_field, search_expr}, mapbox, search_term, search_type, queryable) do
-    search_box = %QueryExpr{
+  defp build_assoc_query(
+         {search_field, search_expr},
+         query_exprs,
+         search_term,
+         search_type,
+         queryable
+       ) do
+    query_expr = %QueryExpr{
       search_field: String.to_atom(search_field),
       search_type: String.to_atom(search_type),
       search_expr: search_expr,
@@ -163,10 +167,15 @@ defmodule Turbo.Ecto.Hooks.Search do
       assoc: []
     }
 
-    do_build_assoc_query(search_field, search_box, queryable, mapbox)
+    do_build_assoc_query(search_field, query_expr, queryable, query_exprs)
   end
 
-  defp do_build_assoc_query(search_field, search_box, queryable, mapbox) do
+  defp do_build_assoc_query(
+         map_key,
+         %{search_field: search_field, assoc: assoc} = query_expr,
+         queryable,
+         query_exprs
+       ) do
     # Returns string of the queryable's associations.
     assoc_tables = Enum.join(Utils.schema_from_query(queryable).__schema__(:associations), "|")
 
@@ -175,34 +184,40 @@ defmodule Turbo.Ecto.Hooks.Search do
     query_fields = Utils.schema_from_query(queryable).__schema__(:fields)
 
     cond do
-      String.to_atom(search_field) in query_fields ->
-        Keyword.put(mapbox, String.to_atom(search_field), search_box)
+      search_field in query_fields ->
+        Keyword.put(query_exprs, String.to_atom(map_key), query_expr)
 
-      Regex.match?(association_regex, search_field) ->
-        [_, assoc_table, search_field] = Regex.run(split_regex, search_field)
+      Regex.match?(association_regex, to_string(search_field)) ->
+        [_, assoc_table, search_field] = Regex.run(split_regex, to_string(search_field))
+
         assoc_table = String.to_atom(assoc_table)
 
         assoc_queryable =
           Utils.schema_from_query(queryable).__schema__(:association, assoc_table).related
 
-        search_box = %{search_box | assoc: search_box.assoc ++ [assoc_table]}
+        query_expr = %{query_expr | assoc: assoc ++ [assoc_table]}
+        query_expr = %{query_expr | search_field: String.to_atom(search_field)}
         # `search_field` may be in the assco table
-        do_build_assoc_query(search_field, search_box, assoc_queryable, mapbox)
+        do_build_assoc_query(map_key, query_expr, assoc_queryable, query_exprs)
 
       true ->
-        mapbox
+        query_exprs
     end
   end
 
   # Generate search queryable.
-  defp search_queryable({_, map}, queryable) do
-    assocs = Map.get(map, :assoc)
-    search_field = Map.get(map, :search_field)
-    search_type = Map.get(map, :search_type)
-    search_term = Map.get(map, :search_term)
-    search_expr = String.to_atom(Map.get(map, :search_expr))
-
-    assocs
+  defp search_queryable(
+         {_,
+          %{
+            assoc: assoc,
+            search_field: search_field,
+            search_type: search_type,
+            search_term: search_term,
+            search_expr: search_expr
+          }},
+         queryable
+       ) do
+    assoc
     |> Enum.with_index()
     |> Enum.reduce(queryable, &join_by_assoc(&1, &2))
     |> BuildSearchQuery.run(search_field, {search_expr, search_type}, search_term)
@@ -211,11 +226,11 @@ defmodule Turbo.Ecto.Hooks.Search do
   defp search_queryable(_, queryable), do: queryable
 
   # Helper function which handles associations in a query with a join type.
-  def join_by_assoc({item, 0}, queryable) do
+  defp join_by_assoc({item, 0}, queryable) do
     join(queryable, :inner, [p1], p2 in assoc(p1, ^item))
   end
 
-  def join_by_assoc({item, _}, queryable) do
+  defp join_by_assoc({item, _}, queryable) do
     join(queryable, :inner, [..., p1], p2 in assoc(p1, ^item))
   end
 

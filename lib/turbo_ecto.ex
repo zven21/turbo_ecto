@@ -77,7 +77,7 @@ defmodule Turbo.Ecto do
 
       iex> params = %{"q" => %{"name_or_body_like" => "elixir"}, "s" => "updated_at+asc", "per_page" => 5, "page" => 1}
       iex> Turbo.Ecto.turboq(Turbo.Ecto.Product, params)
-      #Ecto.Query<from p in Turbo.Ecto.Product, or_where: like(p.body, ^\"%elixir%\"), where: like(p.name, ^\"%elixir%\"), order_by: [asc: p.updated_at], limit: ^5, offset: ^0>
+      #Ecto.Query<from p in Turbo.Ecto.Product, where: like(p.name, ^\"%elixir%\"), or_where: like(p.body, ^\"%elixir%\"), order_by: [asc: p.updated_at], limit: ^5, offset: ^0>
 
   """
   @spec turboq(Ecto.Query.t(), Map.t()) :: Ecto.Query.t()
