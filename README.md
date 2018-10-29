@@ -2,6 +2,7 @@
 # Turbo Ecto
 
 [![Build Status](https://travis-ci.org/zven21/turbo_ecto.svg?branch=master)](https://travis-ci.org/zven21/turbo_ecto)
+[![Coverage Status](https://coveralls.io/repos/github/zven21/turbo_ecto/badge.svg)](https://coveralls.io/github/zven21/turbo_ecto)
 
 Turbo is a very rich ecto component,including search sort and paginate. Inspiration by ruby [ransack](https://github.com/activerecord-hackery/ransack) and learn from [rummage_ecto](https://github.com/aditya7iyengar/rummage_ecto)
 

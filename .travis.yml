@@ -11,7 +11,10 @@ cache:
   directories:
     - _build
     - deps
+env:
+  - MIX_ENV=test
 before_script:
-  - MIX_ENV=test mix ecto.create && MIX_ENV=test mix ecto.migrate
+  - mix ecto.create && mix ecto.migrate
 script:
-  - MIX_ENV=test mix test
+  - mix test
+  - mix coveralls.travis
