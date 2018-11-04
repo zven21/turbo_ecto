@@ -98,7 +98,7 @@ More example pls move: [docs](https://hexdocs.pm/turbo_ecto/api-reference.html)
 
 ## Search Matchers
 
-List of all possible predicates
+List of all possible search_typees
 
 | Predicate | Description | Finish | Note
 | ------------- | ------------- |-------- |-------- |
