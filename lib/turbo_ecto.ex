@@ -31,7 +31,7 @@ defmodule Turbo.Ecto do
   * Input Search
 
     ```elixir
-    url_query = http://localhost:4000/varinats?q[product_category_name_and_product_name_or_name_like]=elixir
+    url_query = http://localhost:4000/varinats?q[product_name_or_name_like]=elixir
     ```
 
   * Expect output:

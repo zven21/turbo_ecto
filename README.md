@@ -54,32 +54,22 @@ config :turbo_ecto, Turbo.Ecto,
     | `category_id` | integer | |
     | `available` | boolean |  |
 
-* Variant Table Structure
-
-    |  Field | Type | Comment |
-    | ------------- | ------------- | --------- |
-    | `name`  | string  |  |
-    | `price` | float |  |
-    | `product_id` | integer | |
-
 ```elixir
 
-  iex> params = %{"q" => %{"product_category_name_and_product_name_or_name_like" => "elixir"}, "s" => "inserted_at+asc"}
+  iex> params = %{"q" => %{"name_and_category_name_like" => "elixir"}, "s" => "inserted_at+asc", "per_page" => 20}
 
-  iex> Turbo.Ecto.turboq(Turbo.Ecto.Variant, params)
-  #Ecto.Query<from v in Turbo.Ecto.Variant, join: p0 in assoc(v, :product),
-  join: p1 in assoc(v, :product), join: c in assoc(p1, :category),
-  or_where: like(v.name, ^"%elixir%"), where: like(p0.name, ^"%elixir%"),
-  where: like(c.name, ^"%elixir%"), order_by: [asc: c.inserted_at], limit: ^10,
-  offset: ^0>
+  iex> Turbo.Ecto.turboq(Turbo.Ecto.Product, params)
+  #Ecto.Query<from p in Turbo.Ecto.Product, join: c in assoc(p, :category),
+  where: like(p.name, "%elixir%") and like(c.name, "%elixir%"),
+  order_by: [asc: p.inserted_at], limit: 20, offset: 0>
 
-  iex> Turbo.Ecto.turbo(Turbo.Ecto.Variant, params)
+  iex> Turbo.Ecto.turbo(Turbo.Ecto.Product, params)
   %{
-    datas: [Variant],
+    datas: [%Product{}],
     paginate: %{
       current_page: 10,
       next_page: 11,
-      per_page: 5,
+      per_page: 20,
       prev_page: 9,
       total_count: 100,
       total_pages: 20
@@ -88,17 +78,11 @@ config :turbo_ecto, Turbo.Ecto,
 
 ```
 
-Also supports:
-
-* Use `Turbo.Ecto.search` only returns search `result` or use `Turbo.Ecto.searchq` returns search `queryable`;
-* Use `Turbo.Ecto.sort` only returns sort `result` or use `Turbo.Ecto.sortq` returns sort `queryable`;
-* Use `Turbo.Ecto.paginate` returns pagiante `result` or use `Turbo.Ecto.paginateq` returns paginate `queryable`.
-
 More example pls move: [docs](https://hexdocs.pm/turbo_ecto/api-reference.html)
 
 ## Search Matchers
 
-List of all possible search_typees
+List of all possible search_types
 
 | Predicate | Description | Finish | Note
 | ------------- | ------------- |-------- |-------- |

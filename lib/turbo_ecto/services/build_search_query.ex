@@ -12,20 +12,23 @@ defmodule Turbo.Ecto.Services.BuildSearchQuery do
   * [x] `gt`: greater than. (SQL: col > 1024)
   * [x] `gteq`: greater than or equal. (SQL: col >= 1024)
   * [x] `is_present`: not null and not empty. (SQL: col is not null AND col != '')
-  * [ ] `blank`: is null or empty. (SQL: col is null OR col = '')
+  * [x] `blank`: is null or empty. (SQL: col is null OR col = '')
   * [x] `is_null`: is null or not null (SQL: col is null)
   * [x] `like`: contains trem value. (SQL: col like "%value%")
-  * [ ] `not_like`: not contains value. (SQL: col not like '%value%')
+  * [x] `not_like`: not contains value. (SQL: col not like '%value%')
   * [x] `ilike`: contains value in a case insensitive fashion. (SQL: )
-  * [ ] `not_ilike`: not contains value in a case insensitive fashion. (SQL:
+  * [x] `not_ilike`: not contains value in a case insensitive fashion. (SQL:
   * [x] `in` contains. (SQL: col in ('1024', '1025'))
-  * [ ] `not_in` not contains. (SQL: col not in ('1024', '1025'))
-  * [ ] `start_with` start with. (SQL: col like 'value%')
-  * [ ] `not_start_with` not start with. (SQL: col not like 'value%')
-  * [ ] `end_with` end with. (SQL: col like '%value')
-  * [ ] `not_end_with` (SQL: col not like '%value')
-  * [x] `is_true` is true. (SQL: col is true)
-  * [x] `between`: between begin and end. (SQL: begin <= col <= end)
+  * [x] `not_in` not contains. (SQL: col not in ('1024', '1025'))
+  * [x] `start_with` start with. (SQL: col like 'value%')
+  * [x] `not_start_with` not start with. (SQL: col not like 'value%')
+  * [x] `end_with` end with. (SQL: col like '%value')
+  * [x] `not_end_with` (SQL: col not like '%value')
+  * [x] `true` is true. (SQL: col is true)
+  * [x] `not_true` is true. (SQL: col is false)
+  * [x] `false` is true. (SQL: col is false)
+  * [x] `not_false` is true. (SQL: col is true)
+  * [ ] `between`: between begin and end. (SQL: begin <= col <= end)
   """
 
   alias Turbo.Ecto.Hooks.Search.Attribute
@@ -58,21 +61,19 @@ defmodule Turbo.Ecto.Services.BuildSearchQuery do
 
   @true_values [1, '1', 'T', 't', true, 'true', 'TRUE', "1", "T", "t", "true", "TRUE"]
 
-  def search_types do
-    @search_types
-  end
+  def search_types, do: @search_types
 
   @doc """
   ## Examples
 
-  When `search_expr` is `:like`:
+  When `search_type` is `:like`:
 
       iex> alias Turbo.Ecto.Services.BuildSearchQuery
       iex> alias Turbo.Ecto.Hooks.Search.Attribute
       iex> BuildSearchQuery.handle_expr(:like, %Attribute{name: "title", parent: :query}, ["a"])
       {:like, [], [{:field, [], [{:query, [], Elixir}, "title"]}, "%a%"]}
 
-  When `search_expr` is `:eq`:
+  When `search_type` is `:eq`:
 
       iex> alias Turbo.Ecto.Services.BuildSearchQuery
       iex> alias Turbo.Ecto.Hooks.Search.Attribute
@@ -80,7 +81,7 @@ defmodule Turbo.Ecto.Services.BuildSearchQuery do
       {:==, [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel],
         [{:field, [], [{:query, [], Elixir}, "title"]}, {:^, [], ["a"]}]}
 
-  When `search_expr` is `:not_eq`:
+  When `search_type` is `:not_eq`:
 
       iex> alias Turbo.Ecto.Services.BuildSearchQuery
       iex> alias Turbo.Ecto.Hooks.Search.Attribute
@@ -95,6 +96,10 @@ defmodule Turbo.Ecto.Services.BuildSearchQuery do
     quote do: like(unquote(field_expr(attribute)), unquote("%#{value}%"))
   end
 
+  def handle_expr(:not_like, attribute, [value | _]) do
+    quote do: not like(unquote(field_expr(attribute)), unquote("%#{value}%"))
+  end
+
   def handle_expr(:eq, attribute, [value | _]) do
     quote(do: unquote(field_expr(attribute)) == ^unquote(value))
   end
@@ -103,11 +108,11 @@ defmodule Turbo.Ecto.Services.BuildSearchQuery do
     quote do: unquote(field_expr(attribute)) != ^unquote(value)
   end
 
-  def handle_expr(:cont, attribute, [value | _]) do
+  def handle_expr(:ilike, attribute, [value | _]) do
     quote do: ilike(unquote(field_expr(attribute)), unquote("%#{value}%"))
   end
 
-  def handle_expr(:not_cont, attribute, [value | _]) do
+  def handle_expr(:not_ilike, attribute, [value | _]) do
     quote do: not ilike(unquote(field_expr(attribute)), unquote("%#{value}%"))
   end
 
@@ -143,19 +148,19 @@ defmodule Turbo.Ecto.Services.BuildSearchQuery do
     quote do: not ilike(unquote(field_expr(attribute)), unquote(value))
   end
 
-  def handle_expr(:start, attribute, [value | _]) do
+  def handle_expr(:start_with, attribute, [value | _]) do
     quote do: ilike(unquote(field_expr(attribute)), unquote("#{value}%"))
   end
 
-  def handle_expr(:not_start, attribute, [value | _]) do
+  def handle_expr(:not_start_with, attribute, [value | _]) do
     quote do: not ilike(unquote(field_expr(attribute)), unquote("#{value}%"))
   end
 
-  def handle_expr(:end, attribute, [value | _]) do
+  def handle_expr(:end_with, attribute, [value | _]) do
     quote do: ilike(unquote(field_expr(attribute)), unquote("%#{value}%"))
   end
 
-  def handle_expr(:not_end, attribute, [value | _]) do
+  def handle_expr(:not_end_with, attribute, [value | _]) do
     quote do: not ilike(unquote(field_expr(attribute)), unquote("%#{value}%"))
   end
 
@@ -190,6 +195,10 @@ defmodule Turbo.Ecto.Services.BuildSearchQuery do
   def handle_expr(:not_null, attribute, [value | _] = values) when value in @true_values do
     quote(do: not unquote(handle_expr(:null, attribute, values)))
   end
+
+  # def handle_expr(:between, attribute, [hd | last]) do
+  #   quote do: ^unquote(hd) < unquote(field_expr(attribute)) < ^unquote(last)
+  # end
 
   defp field_expr(%Attribute{name: name, parent: parent}) do
     quote do: field(unquote(Macro.var(parent, Elixir)), unquote(name))
