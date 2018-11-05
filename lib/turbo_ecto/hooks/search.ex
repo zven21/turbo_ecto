@@ -16,7 +16,7 @@ defmodule Turbo.Ecto.Hooks.Search do
   ## Examples
 
       iex> params = %{"q" => %{"name_or_category_name_like" => "elixir"}, "s" => "updated_at+asc", "per_page" => 5, "page" => 1}
-      iex> Turbo.Ecto.Hooks.Search.run(params, Turbo.Ecto.Product)
+      iex> Turbo.Ecto.Hooks.Search.run(Turbo.Ecto.Product, params)
       {:ok,
         %Turbo.Ecto.Hooks.Search{
           combinator: :and,
@@ -36,8 +36,8 @@ defmodule Turbo.Ecto.Hooks.Search do
       }
 
   """
-  @spec run(Map.t(), Ecto.Query.t()) :: any()
-  def run(params, schema) do
+  @spec run(Ecto.Query.t(), Map.t()) :: any()
+  def run(schema, params) do
     params
     |> Map.get("q", %{})
     |> extract(schema)

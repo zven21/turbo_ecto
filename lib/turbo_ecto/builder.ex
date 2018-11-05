@@ -84,8 +84,8 @@ defmodule Turbo.Ecto.Builder do
     schema = extract_schema(queryable)
     params = stringify_keys(params)
 
-    with {:ok, %Search{} = searches} <- Search.run(params, schema),
-         {:ok, sorts} <- Sort.run(params, schema),
+    with {:ok, %Search{} = searches} <- Search.run(schema, params),
+         {:ok, sorts} <- Sort.run(schema, params),
          {:ok, %Paginate{} = %{limit: limit, offset: offset}} <- Paginate.run(params) do
       relations = build_relations(searches, sorts)
       {query, binding} = build_binding(queryable, relations)

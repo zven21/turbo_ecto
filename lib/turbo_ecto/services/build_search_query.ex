@@ -70,24 +70,176 @@ defmodule Turbo.Ecto.Services.BuildSearchQuery do
 
       iex> alias Turbo.Ecto.Services.BuildSearchQuery
       iex> alias Turbo.Ecto.Hooks.Search.Attribute
-      iex> BuildSearchQuery.handle_expr(:like, %Attribute{name: "title", parent: :query}, ["a"])
-      {:like, [], [{:field, [], [{:query, [], Elixir}, "title"]}, "%a%"]}
+      iex> BuildSearchQuery.handle_expr(:like, %Attribute{name: :title, parent: :query}, ["elixir"])
+      {:like, [], [{:field, [], [{:query, [], Elixir}, :title]}, "%elixir%"]}
+
+  When `search_type` is `:not_like`:
+
+      iex> alias Turbo.Ecto.Services.BuildSearchQuery
+      iex> alias Turbo.Ecto.Hooks.Search.Attribute
+      iex> BuildSearchQuery.handle_expr(:not_like, %Attribute{name: :title, parent: :query}, ["elixir"])
+      {:not, [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel], [{:like, [], [{:field, [], [{:query, [], Elixir}, :title]}, "%elixir%"]}]}
 
   When `search_type` is `:eq`:
 
       iex> alias Turbo.Ecto.Services.BuildSearchQuery
       iex> alias Turbo.Ecto.Hooks.Search.Attribute
-      iex> BuildSearchQuery.handle_expr(:eq, %Attribute{name: "title", parent: :query}, ["a"])
-      {:==, [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel],
-        [{:field, [], [{:query, [], Elixir}, "title"]}, {:^, [], ["a"]}]}
+      iex> BuildSearchQuery.handle_expr(:eq, %Attribute{name: :price, parent: :query}, ["10"])
+      {:==, [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel], [{:field, [], [{:query, [], Elixir}, :price]}, {:^, [], ["10"]}]}
 
   When `search_type` is `:not_eq`:
 
       iex> alias Turbo.Ecto.Services.BuildSearchQuery
       iex> alias Turbo.Ecto.Hooks.Search.Attribute
-      iex> BuildSearchQuery.handle_expr(:not_eq, %Attribute{name: "title", parent: :query}, ["a"])
-      {:!=, [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel],
-        [{:field, [], [{:query, [], Elixir}, "title"]}, {:^, [], ["a"]}]}
+      iex> BuildSearchQuery.handle_expr(:not_eq, %Attribute{name: :price, parent: :query}, ["10"])
+      {:!=, [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel], [{:field, [], [{:query, [], Elixir}, :price]}, {:^, [], ["10"]}]}
+
+  When `search_type` is `:ilike`:
+
+      iex> alias Turbo.Ecto.Services.BuildSearchQuery
+      iex> alias Turbo.Ecto.Hooks.Search.Attribute
+      iex> BuildSearchQuery.handle_expr(:ilike, %Attribute{name: :title, parent: :query}, ["elixir"])
+      {:ilike, [], [{:field, [], [{:query, [], Elixir}, :title]}, "%elixir%"]}
+
+  When `search_type` is `:not_ilike`:
+
+      iex> alias Turbo.Ecto.Services.BuildSearchQuery
+      iex> alias Turbo.Ecto.Hooks.Search.Attribute
+      iex> BuildSearchQuery.handle_expr(:not_ilike, %Attribute{name: :title, parent: :query}, ["elixir"])
+      {:not, [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel], [{:ilike, [], [{:field, [], [{:query, [], Elixir}, :title]}, "%elixir%"]}]}
+
+  When `search_type` is `:lt`:
+
+      iex> alias Turbo.Ecto.Services.BuildSearchQuery
+      iex> alias Turbo.Ecto.Hooks.Search.Attribute
+      iex> BuildSearchQuery.handle_expr(:lt, %Attribute{name: :price, parent: :query}, ["10"])
+      {:<, [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel], [{:field, [], [{:query, [], Elixir}, :price]}, {:^, [], ["10"]}]}
+
+  When `search_type` is `:lteq`:
+
+      iex> alias Turbo.Ecto.Services.BuildSearchQuery
+      iex> alias Turbo.Ecto.Hooks.Search.Attribute
+      iex> BuildSearchQuery.handle_expr(:lteq, %Attribute{name: :price, parent: :query}, ["10"])
+      {:<=, [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel], [{:field, [], [{:query, [], Elixir}, :price]}, {:^, [], ["10"]}]}
+
+  When `search_type` is `:gt`:
+
+      iex> alias Turbo.Ecto.Services.BuildSearchQuery
+      iex> alias Turbo.Ecto.Hooks.Search.Attribute
+      iex> BuildSearchQuery.handle_expr(:gt, %Attribute{name: :price, parent: :query}, ["10"])
+      {:>, [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel], [{:field, [], [{:query, [], Elixir}, :price]}, {:^, [], ["10"]}]}
+
+  When `search_type` is `:gteq`:
+
+      iex> alias Turbo.Ecto.Services.BuildSearchQuery
+      iex> alias Turbo.Ecto.Hooks.Search.Attribute
+      iex> BuildSearchQuery.handle_expr(:gteq, %Attribute{name: :price, parent: :query}, ["10"])
+      {:>=, [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel], [{:field, [], [{:query, [], Elixir}, :price]}, {:^, [], ["10"]}]}
+
+  When `search_type` is `:in`:
+
+      iex> alias Turbo.Ecto.Services.BuildSearchQuery
+      iex> alias Turbo.Ecto.Hooks.Search.Attribute
+      iex> BuildSearchQuery.handle_expr(:in, %Attribute{name: :price, parent: :query}, ["10", "20"])
+      {:in, [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel], [{:field, [], [{:query, [], Elixir}, :price]}, ["10", "20"]]}
+
+  When `search_type` is `:not_in`:
+
+      iex> alias Turbo.Ecto.Services.BuildSearchQuery
+      iex> alias Turbo.Ecto.Hooks.Search.Attribute
+      iex> BuildSearchQuery.handle_expr(:not_in, %Attribute{name: :price, parent: :query}, ["10", "20"])
+      {:not, [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel], [{:in, [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel], [{:field, [], [{:query, [], Elixir}, :price]}, ["10", "20"]]}]}
+
+  When `search_type` is `:start_with`:
+
+      iex> alias Turbo.Ecto.Services.BuildSearchQuery
+      iex> alias Turbo.Ecto.Hooks.Search.Attribute
+      iex> BuildSearchQuery.handle_expr(:start_with, %Attribute{name: :title, parent: :query}, ["elixir"])
+      {:ilike, [], [{:field, [], [{:query, [], Elixir}, :title]}, "elixir%"]}
+
+  When `search_type` is `:not_start_with`:
+
+      iex> alias Turbo.Ecto.Services.BuildSearchQuery
+      iex> alias Turbo.Ecto.Hooks.Search.Attribute
+      iex> BuildSearchQuery.handle_expr(:not_start_with, %Attribute{name: :title, parent: :query}, ["elixir"])
+      {:not, [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel], [{:ilike, [], [{:field, [], [{:query, [], Elixir}, :title]}, "elixir%"]}]}
+
+  When `search_type` is `:end_with`:
+
+      iex> alias Turbo.Ecto.Services.BuildSearchQuery
+      iex> alias Turbo.Ecto.Hooks.Search.Attribute
+      iex> BuildSearchQuery.handle_expr(:end_with, %Attribute{name: :title, parent: :query}, ["elixir"])
+      {:ilike, [], [{:field, [], [{:query, [], Elixir}, :title]}, "%elixir%"]}
+
+  When `search_type` is `:not_end_with`:
+
+      iex> alias Turbo.Ecto.Services.BuildSearchQuery
+      iex> alias Turbo.Ecto.Hooks.Search.Attribute
+      iex> BuildSearchQuery.handle_expr(:not_end_with, %Attribute{name: :title, parent: :query}, ["elixir"])
+      {:not, [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel], [{:ilike, [], [{:field, [], [{:query, [], Elixir}, :title]}, "%elixir%"]}]}
+
+  When `search_type` is `:true`:
+
+      iex> alias Turbo.Ecto.Services.BuildSearchQuery
+      iex> alias Turbo.Ecto.Hooks.Search.Attribute
+      iex> BuildSearchQuery.handle_expr(:true, %Attribute{name: :available, parent: :query}, [true])
+      {:!=, [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel], [{:field, [], [{:query, [], Elixir}, :available]}, {:^, [], [true]}]}
+
+  When `search_type` is `:not_true`:
+
+      iex> alias Turbo.Ecto.Services.BuildSearchQuery
+      iex> alias Turbo.Ecto.Hooks.Search.Attribute
+      iex> BuildSearchQuery.handle_expr(:not_true, %Attribute{name: :available, parent: :query}, [true])
+      {:!=, [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel], [{:field, [], [{:query, [], Elixir}, :available]}, {:^, [], [true]}]}
+
+  When `search_type` is `:false`:
+
+      iex> alias Turbo.Ecto.Services.BuildSearchQuery
+      iex> alias Turbo.Ecto.Hooks.Search.Attribute
+      iex> BuildSearchQuery.handle_expr(:false, %Attribute{name: :price, parent: :query}, [true])
+      {:==, [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel], [{:field, [], [{:query, [], Elixir}, :price]}, {:^, [], [false]}]}
+
+  When `search_type` is `:not_false`:
+
+      iex> alias Turbo.Ecto.Services.BuildSearchQuery
+      iex> alias Turbo.Ecto.Hooks.Search.Attribute
+      iex> BuildSearchQuery.handle_expr(:not_false, %Attribute{name: :price, parent: :query}, [true])
+      {:!=, [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel], [{:field, [], [{:query, [], Elixir}, :price]}, {:^, [], [false]}]}
+
+  When `search_type` is `:null`:
+
+      iex> alias Turbo.Ecto.Services.BuildSearchQuery
+      iex> alias Turbo.Ecto.Hooks.Search.Attribute
+      iex> BuildSearchQuery.handle_expr(:null, %Attribute{name: :available, parent: :query}, [true])
+      {:is_nil, [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel], [{:field, [], [{:query, [], Elixir}, :available]}]}
+
+  When `search_type` is `:not_null`:
+
+      iex> alias Turbo.Ecto.Services.BuildSearchQuery
+      iex> alias Turbo.Ecto.Hooks.Search.Attribute
+      iex> BuildSearchQuery.handle_expr(:not_null, %Attribute{name: :available, parent: :query}, [true])
+      {:not, [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel], [{:is_nil, [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel], [{:field, [], [{:query, [], Elixir}, :available]}]}]}
+
+  When `search_type` is `:present`:
+
+      iex> alias Turbo.Ecto.Services.BuildSearchQuery
+      iex> alias Turbo.Ecto.Hooks.Search.Attribute
+      iex> BuildSearchQuery.handle_expr(:present, %Attribute{name: :available, parent: :query}, [true])
+      {:not, [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel], [{:or, [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel], [{:is_nil, [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel], [{:field, [], [{:query, [], Elixir}, :available]}]}, {:==, [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel], [{:field, [], [{:query, [], Elixir}, :available]}, {:^, [], [[]]}]}]}]}
+
+  When `search_type` is `:blank`:
+
+      iex> alias Turbo.Ecto.Services.BuildSearchQuery
+      iex> alias Turbo.Ecto.Hooks.Search.Attribute
+      iex> BuildSearchQuery.handle_expr(:blank, %Attribute{name: :available, parent: :query}, [true])
+      {:or, [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel], [{:is_nil, [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel], [{:field, [], [{:query, [], Elixir}, :available]}]}, {:==, [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel], [{:field, [], [{:query, [], Elixir}, :available]}, {:^, [], [[]]}]}]}
+
+  When `search_type` is `:between`:
+
+      iex> alias Turbo.Ecto.Services.BuildSearchQuery
+      iex> alias Turbo.Ecto.Hooks.Search.Attribute
+      iex> BuildSearchQuery.handle_expr(:between, %Attribute{name: :price, parent: :query}, ["10", "20"])
+      {:<, [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel], [{:<, [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel], [{:^, [], ["10"]}, {:field, [], [{:query, [], Elixir}, :price]}]}, {:^, [], [["20"]]}]}
 
   """
 
@@ -196,9 +348,9 @@ defmodule Turbo.Ecto.Services.BuildSearchQuery do
     quote(do: not unquote(handle_expr(:null, attribute, values)))
   end
 
-  # def handle_expr(:between, attribute, [hd | last]) do
-  #   quote do: ^unquote(hd) < unquote(field_expr(attribute)) < ^unquote(last)
-  # end
+  def handle_expr(:between, attribute, [hd | last] = values) when length(values) == 2 do
+    quote do: ^unquote(hd) < unquote(field_expr(attribute)) < ^unquote(last)
+  end
 
   defp field_expr(%Attribute{name: name, parent: parent}) do
     quote do: field(unquote(Macro.var(parent, Elixir)), unquote(name))

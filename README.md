@@ -93,11 +93,11 @@ List of all possible search_types
 | `*_gt` | greater than | Y | (SQL: `col > 1024`) |
 | `*_gteq` | greater than or equal | Y | greater than or equal. (SQL: `col >= 1024`) |
 | `*_present` | not null and not empty | Y | Only compatible with string columns. Example: `q[name_present]=1` (SQL: `col is not null AND col != ''`) |
-| `*_is_null` | is null true or false | Y | (SQL: `col is null` or `col is not null`) |
+| `*_null` | is null true or false | Y | (SQL: `col is null` or `col is not null`) |
 | `*_in` | match any values in array | Y | e.g. `q[name_in][]=Alice&q[name_in][]=Bob` (SQL: `name in ('Alice', 'Bob')`)|
 | `*_like` | Contains value | Y | (SQL: `col LIKE '%value%'`) |
 | `*_ilike` | Contains any of | Y | (SQL: `col ILIKE '%value%'`) |
-| `*_is_true` | is true or false | Y | (SQL: `col is true or col is false`) |
+| `*_true` | is true or false | Y | (SQL: `col is true or col is false`) |
 | `*_between`| begin < between < end | Y | e.g. `q[price_between][]=100&q[price_between][]=200` (SQL: `100 <= price <= 200`) |
 
 ## Credits

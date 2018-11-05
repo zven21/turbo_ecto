@@ -18,7 +18,7 @@ defmodule Turbo.Ecto.Hooks.Sort do
   When sort with one field:
 
       iex> params = %{"s" => "inserted_at+desc"}
-      iex> Turbo.Ecto.Hooks.Sort.run(params, Turbo.Ecto.Product)
+      iex> Turbo.Ecto.Hooks.Sort.run(Turbo.Ecto.Product, params)
       {:ok,
         [
           %Turbo.Ecto.Hooks.Sort{
@@ -34,7 +34,7 @@ defmodule Turbo.Ecto.Hooks.Sort do
   When sort with multi fields:
 
       iex> params = %{"s" => ["inserted_at+desc", "inserted_at+asc"]}
-      iex> Turbo.Ecto.Hooks.Sort.run(params, Turbo.Ecto.Product)
+      iex> Turbo.Ecto.Hooks.Sort.run(Turbo.Ecto.Product, params)
       {:ok,
         [
           %Turbo.Ecto.Hooks.Sort{
@@ -55,8 +55,8 @@ defmodule Turbo.Ecto.Hooks.Sort do
       }
 
   """
-  @spec run(Map.t(), Ecto.Query.t()) :: any()
-  def run(params, schema) do
+  @spec run(Ecto.Query.t(), Map.t()) :: any()
+  def run(schema, params) do
     params
     |> Map.pop("s", [])
     |> handle_sort(schema)
