@@ -37,7 +37,7 @@ defmodule Turbo.Ecto do
   * Expect output:
 
     ```elixir
-    iex> params = %{"q" => %{"product_name_or_name_like" => "elixir"}}
+    iex> params = %{"q" => %{"product.name_or_name_like" => "elixir"}}
     iex> Turbo.Ecto.turboq(Turbo.Ecto.Variant, params)
     #Ecto.Query<from v in Turbo.Ecto.Variant, join: p in assoc(v, :product), where: like(p.name, \"%elixir%\") or like(v.name, \"%elixir%\"), limit: 10, offset: 0>
     ```
@@ -53,7 +53,7 @@ defmodule Turbo.Ecto do
 
   ## Example
 
-      iex> params = %{"q" => %{"name_or_product_name_like" => "elixir", "price_eq" => "1"}, "s" => "updated_at+asc", "per_page" => 5, "page" => 1}
+      iex> params = %{"q" => %{"name_or_product.name_like" => "elixir", "price_eq" => "1"}, "s" => "updated_at+asc", "per_page" => 5, "page" => 1}
       iex> Turbo.Ecto.turbo(Turbo.Ecto.Variant, params)
       %{
         paginate: %{current_page: 1, per_page: 5, next_page: nil, prev_page: nil, total_count: 0, total_pages: 0},

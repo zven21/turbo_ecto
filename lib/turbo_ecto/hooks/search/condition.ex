@@ -16,25 +16,25 @@ defmodule Turbo.Ecto.Hooks.Search.Condition do
          do: build_condition(attributes, search_type, combinator, values)
   end
 
-  def extract_attributes(key, module) do
+  # Build attributes.
+  defp extract_attributes(key, module) do
     key
     |> String.split(~r/_(and|or)_/)
     |> Enum.map(&Attribute.extract(&1, module))
     |> validate_attributes()
   end
 
-  def validate_attributes(attributes, acc \\ [])
+  defp validate_attributes(attributes, acc \\ [])
 
-  def validate_attributes([{:error, reason} | _tail], _acc),
-    do: {:error, reason}
+  defp validate_attributes([{:error, reason} | _tail], _acc), do: {:error, reason}
 
-  def validate_attributes([attribute | tail], acc),
+  defp validate_attributes([attribute | tail], acc),
     do: validate_attributes(tail, acc ++ [attribute])
 
-  def validate_attributes([], acc),
-    do: acc
+  defp validate_attributes([], acc), do: acc
 
-  def get_search_type(key) do
+  # Gets the search type, :like, :eq, etc.
+  defp get_search_type(key) do
     case BuildSearchQuery.search_types()
          |> Enum.sort_by(&byte_size/1, &>=/2)
          |> Enum.find(&String.ends_with?(key, &1)) do
@@ -43,7 +43,8 @@ defmodule Turbo.Ecto.Hooks.Search.Condition do
     end
   end
 
-  def get_combinator(key) do
+  # Only support one symbol, priority `or`
+  defp get_combinator(key) do
     cond do
       key |> String.contains?("_or_") -> :or
       key |> String.contains?("_and_") -> :and
@@ -51,32 +52,29 @@ defmodule Turbo.Ecto.Hooks.Search.Condition do
     end
   end
 
-  def prepare_values(values) when is_list(values) do
+  # Build the search values.
+  defp prepare_values(values) when is_list(values) do
     result =
       Enum.all?(values, fn
         value when is_bitstring(value) -> String.length(value) >= 1
         _ -> true
       end)
 
-    if result do
-      values
-    else
-      {:error, :value_is_empty}
-    end
+    if result, do: values, else: {:error, :value_is_empty}
   end
 
-  def prepare_values(""), do: {:error, :value_is_empty}
-  def prepare_values(value) when is_bitstring(value), do: List.wrap(value)
-  def prepare_values(value), do: List.wrap(value)
+  defp prepare_values(""), do: {:error, :value_is_empty}
+  defp prepare_values(value) when is_bitstring(value), do: List.wrap(value)
+  defp prepare_values(value), do: List.wrap(value)
 
-  def build_condition({:error, reason}, _search_type, _combinator, _values), do: {:error, reason}
+  defp build_condition({:error, reason}, _search_type, _combinator, _values), do: {:error, reason}
 
-  def build_condition(_attributes, _search_type, _combinator, {:error, reason}),
+  defp build_condition(_attributes, _search_type, _combinator, {:error, reason}),
     do: {:error, reason}
 
-  def build_condition(_attributes, {:error, reason}, _combinator, _values), do: {:error, reason}
+  defp build_condition(_attributes, {:error, reason}, _combinator, _values), do: {:error, reason}
 
-  def build_condition(attributes, search_type, combinator, values) do
+  defp build_condition(attributes, search_type, combinator, values) do
     %Condition{
       attributes: attributes,
       search_type: search_type,

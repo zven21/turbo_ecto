@@ -1,12 +1,23 @@
 defmodule Turbo.Ecto.Hooks.Search.Attribute do
-  @moduledoc false
-
-  defstruct name: nil, parent: nil
+  @moduledoc """
+  Search Attribute.
+  """
 
   alias Turbo.Ecto.Hooks.Search.Attribute
 
+  defstruct name: nil, parent: nil
+
   @type t :: %__MODULE__{}
 
+  @doc """
+  Extract Attribute.
+
+  ## TODO
+
+    * Support multi table assoc, limit: 5.
+
+  """
+  @spec extract(String.t(), Ecto.Query.t()) :: t() | {:error, :attribute_not_found}
   def extract(key, module) do
     case get_name(module, key) || get_assoc_name(module, key) do
       nil -> {:error, :attribute_not_found}
@@ -22,7 +33,7 @@ defmodule Turbo.Ecto.Hooks.Search.Attribute do
         nil
 
       assoc ->
-        key = String.replace_prefix(key, "#{assoc}_", "")
+        key = String.replace_prefix(key, "#{assoc}.", "")
         {assoc, get_name(module.__schema__(:association, assoc), key)}
     end
   end

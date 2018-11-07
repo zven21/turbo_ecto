@@ -18,7 +18,7 @@ defmodule Turbo.Ecto.Hooks.Search do
 
   ## Examples
 
-      iex> params = %{"q" => %{"name_or_category_name_like" => "elixir", "price_eq" => 1}, "s" => "updated_at+asc", "per_page" => 5, "page" => 1}
+      iex> params = %{"q" => %{"name_or_category.name_like" => "elixir", "price_eq" => 1}, "s" => "updated_at+asc", "per_page" => 5, "page" => 1}
       iex> Turbo.Ecto.Hooks.Search.run(Turbo.Ecto.Product, params)
       {:ok,
         %Turbo.Ecto.Hooks.Search{
@@ -55,7 +55,7 @@ defmodule Turbo.Ecto.Hooks.Search do
     |> result()
   end
 
-  def extract(params, schema), do: do_extract(params, schema)
+  defp extract(params, schema), do: do_extract(params, schema)
 
   defp do_extract(params, schema, combinator \\ :and) do
     case extract_conditions(params, schema) do
@@ -66,14 +66,22 @@ defmodule Turbo.Ecto.Hooks.Search do
 
   defp extract_condition({key, value}, schema), do: Condition.extract(key, value, schema)
 
-  # defp extract_groupings(groupings, schema, config) do
-  #   groupings |> Enum.map(&extract(&1, schema, config))
-  # end
-
   defp extract_conditions(params, schema) do
-    params |> Enum.map(&extract_condition(&1, schema))
+    params
+    |> Enum.map(&extract_condition(&1, schema))
+    |> validate_conditions()
   end
 
-  def result({:error, reason}), do: {:error, reason}
-  def result(search_result), do: {:ok, search_result}
+  # validate_conditions
+  defp validate_conditions(conditions, acc \\ [])
+
+  defp validate_conditions([{:error, reason} | _tail], _acc), do: {:error, reason}
+
+  defp validate_conditions([attribute | tail], acc),
+    do: validate_conditions(tail, acc ++ [attribute])
+
+  defp validate_conditions([], acc), do: acc
+
+  defp result({:error, reason}), do: {:error, reason}
+  defp result(search_result), do: {:ok, search_result}
 end

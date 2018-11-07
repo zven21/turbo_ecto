@@ -56,7 +56,7 @@ config :turbo_ecto, Turbo.Ecto,
 
 ```elixir
 
-  iex> params = %{"q" => %{"name_and_category_name_like" => "elixir"}, "s" => "inserted_at+asc", "per_page" => 20}
+  iex> params = %{"q" => %{"name_and_category.name_like" => "elixir"}, "s" => "inserted_at+asc", "per_page" => 20}
 
   iex> Turbo.Ecto.turboq(Turbo.Ecto.Product, params)
   #Ecto.Query<from p in Turbo.Ecto.Product, join: c in assoc(p, :category),
