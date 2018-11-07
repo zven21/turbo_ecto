@@ -14,6 +14,6 @@ defmodule Turbo.Ecto.Builder.LimitOffset do
     |> elem(0)
   end
 
-  def expr(val) do
-  end
+  # def expr(val) do
+  # end
 end

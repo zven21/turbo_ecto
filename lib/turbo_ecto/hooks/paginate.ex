@@ -1,7 +1,5 @@
 defmodule Turbo.Ecto.Hooks.Paginate do
-  @moduledoc """
-  Single table Paginate.
-  """
+  @moduledoc false
 
   import Ecto.Query
   alias Turbo.Ecto.Config, as: TConfig
@@ -10,10 +8,10 @@ defmodule Turbo.Ecto.Hooks.Paginate do
   defstruct [:limit, :offset]
 
   @type t :: %__MODULE__{}
-  @per_page TConfig.per_page() || 10
+  @per_page TConfig.per_page()
 
   @doc """
-  Returns paginate queryable.
+  Returns paginate object.
 
   ## Example
 

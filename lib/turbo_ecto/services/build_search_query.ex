@@ -28,7 +28,7 @@ defmodule Turbo.Ecto.Services.BuildSearchQuery do
   * [x] `not_true` is true. (SQL: col is false)
   * [x] `false` is true. (SQL: col is false)
   * [x] `not_false` is true. (SQL: col is true)
-  * [ ] `between`: between begin and end. (SQL: begin <= col <= end)
+  * [x] `between`: between begin and end. (SQL: begin <= col <= end)
   """
 
   alias Turbo.Ecto.Hooks.Search.Attribute

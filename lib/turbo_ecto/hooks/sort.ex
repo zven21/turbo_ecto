@@ -1,7 +1,6 @@
 defmodule Turbo.Ecto.Hooks.Sort do
-  @moduledoc """
-  Single Table Sort
-  """
+  @moduledoc false
+
   alias Turbo.Ecto.Hooks.Sort
   alias Turbo.Ecto.Hooks.Search.Attribute
 
@@ -11,7 +10,7 @@ defmodule Turbo.Ecto.Hooks.Sort do
   @sort_order ~w(asc desc)
 
   @doc """
-  Returns sort queryable.
+  Returns sort object.
 
   ## Examples
 
@@ -33,13 +32,13 @@ defmodule Turbo.Ecto.Hooks.Sort do
 
   When sort with multi fields:
 
-      iex> params = %{"s" => ["inserted_at+desc", "inserted_at+asc"]}
+      iex> params = %{"s" => ["updated_at+desc", "inserted_at+asc"]}
       iex> Turbo.Ecto.Hooks.Sort.run(Turbo.Ecto.Product, params)
       {:ok,
         [
           %Turbo.Ecto.Hooks.Sort{
             attribute: %Turbo.Ecto.Hooks.Search.Attribute{
-              name: :inserted_at,
+              name: :updated_at,
               parent: :query
             },
             direction: :desc
