@@ -1,27 +1,34 @@
 defmodule Turbo.Ecto.Hooks.Paginate do
-  @moduledoc """
-  Single table Paginate.
-  """
+  @moduledoc false
 
   import Ecto.Query
+  alias Turbo.Ecto.Config, as: TConfig
+  alias Turbo.Ecto.Hooks.Paginate
 
-  @per_page 10
+  defstruct [:limit, :offset]
+
+  @type t :: %__MODULE__{}
+  @per_page TConfig.per_page()
 
   @doc """
-  Returns paginate queryable.
+  Returns paginate object.
 
   ## Example
 
       iex> params = %{"per_page" => 5, "page" => 2}
-      iex> Turbo.Ecto.Hooks.Paginate.run(Turbo.Ecto.Product, params)
-      #Ecto.Query<from p in Turbo.Ecto.Product, limit: ^5, offset: ^5>
+      iex> Turbo.Ecto.Hooks.Paginate.run(params)
+      {:ok, %Turbo.Ecto.Hooks.Paginate{limit: 5, offset: 5}}
+
+      iex> params = %{}
+      iex> Turbo.Ecto.Hooks.Paginate.run(params)
+      {:ok, %Turbo.Ecto.Hooks.Paginate{limit: 10, offset: 0}}
 
   """
-  @spec run(Ecto.Query.t(), Map.t()) :: Ecto.Query.t()
-  def run(queryable, params) do
+  @spec run(Map.t()) :: {:ok, Map.t()}
+  def run(params) do
     params
     |> format_params()
-    |> handle_paginate(queryable)
+    |> handle_paginate()
   end
 
   defp format_params(params) do
@@ -31,15 +38,13 @@ defmodule Turbo.Ecto.Hooks.Paginate do
   end
 
   # build queryable
-  defp handle_paginate(formated_params, queryable) do
+  defp handle_paginate(formated_params) do
     per_page = Map.get(formated_params, :per_page)
     page = Map.get(formated_params, :page)
 
     offset = per_page * (page - 1)
 
-    queryable
-    |> limit(^per_page)
-    |> offset(^offset)
+    {:ok, %Paginate{limit: per_page, offset: offset}}
   end
 
   # format date, replace string to integer
@@ -47,6 +52,10 @@ defmodule Turbo.Ecto.Hooks.Paginate do
     if is_integer(value), do: value, else: String.to_integer(value)
   end
 
+  @doc """
+  Returns the paginate info.
+  """
+  @spec get_paginate(Ecto.Query.t(), Map.t(), Keyword.t()) :: Map.t()
   def get_paginate(queryable, params, opts) do
     formated_params = format_params(params)
 
