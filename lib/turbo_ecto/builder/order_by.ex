@@ -3,6 +3,10 @@ defmodule Turbo.Ecto.Builder.OrderBy do
 
   alias Ecto.Query.Builder.OrderBy
 
+  @doc """
+  Builds a quoted order_by expression.
+  """
+  @spec build(Macro.t(), [Macro.t()], [Macro.t()]) :: Macro.t()
   def build(query, sorts, binding) do
     query
     |> Macro.escape()
@@ -17,7 +21,7 @@ defmodule Turbo.Ecto.Builder.OrderBy do
     desc: {:field, [], [{:query, [], Elixir}, :inserted_at]}
   ]
   """
-  def expr(%{direction: direction, attribute: %{name: name, parent: parent}}) do
+  defp expr(%{direction: direction, attribute: %{name: name, parent: parent}}) do
     parent = Macro.var(parent, Elixir)
     quote do: {unquote(direction), field(unquote(parent), unquote(name))}
   end
