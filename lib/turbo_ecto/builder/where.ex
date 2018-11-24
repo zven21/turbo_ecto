@@ -8,6 +8,7 @@ defmodule Turbo.Ecto.Builder.Where do
 
   @doc """
   """
+  # @spec
   def build(query, %Search{combinator: combinator} = grouping, binding)
       when combinator in ~w(and or)a do
     exprs = grouping |> List.wrap() |> groupings_expr()

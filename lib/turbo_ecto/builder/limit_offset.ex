@@ -4,7 +4,24 @@ defmodule Turbo.Ecto.Builder.LimitOffset do
   alias Ecto.Query.Builder.LimitOffset
 
   @doc """
-  val = 1
+  Builds a quoted limit or offset expression.
+
+  ## Examples
+
+  When type is `:limit`:
+      iex> type = :limit
+      iex> query = Turbo.Ecto.Product
+      iex> val = 1
+      iex> Turbo.Ecto.Builder.LimitOffset.build(type, query, val, [])
+      #Ecto.Query<from p in Turbo.Ecto.Product, limit: 1>
+
+  When type is `:offset`:
+      iex> type = :offset
+      iex> query = Turbo.Ecto.Product
+      iex> val = 1
+      iex> Turbo.Ecto.Builder.LimitOffset.build(type, query, val, [])
+      #Ecto.Query<from p in Turbo.Ecto.Product, offset: 1>
+
   """
   @spec build(:limit | :offset, Macro.t(), [Macro.t()], Macro.t()) :: Macro.t()
   def build(type, query, val, binding) do

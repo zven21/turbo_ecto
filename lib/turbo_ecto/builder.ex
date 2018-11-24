@@ -108,7 +108,7 @@ defmodule Turbo.Ecto.Builder do
   defp limit(query, limit, binding), do: LimitOffset.build(:limit, query, limit, binding)
   defp offset(query, offset, binding), do: LimitOffset.build(:offset, query, offset, binding)
 
-  def build_binding(query, relations) do
+  defp build_binding(query, relations) do
     bindings =
       relations
       |> List.insert_at(0, :query)
@@ -117,7 +117,7 @@ defmodule Turbo.Ecto.Builder do
     Builder.escape_binding(query, bindings)
   end
 
-  def build_relations(grouping, sorts) do
+  defp build_relations(grouping, sorts) do
     sorts_parents = Enum.map(sorts, & &1.attribute.parent)
 
     grouping
