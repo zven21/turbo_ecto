@@ -139,8 +139,9 @@ defmodule Turbo.Ecto.Builder do
     acc
   end
 
-  defp extract_schema(%{from: {_, schema}}), do: schema
-  defp extract_schema(schema), do: schema
+  def extract_schema(%{from: %{source: %{query: subquery}}}), do: extract_schema(subquery)
+  def extract_schema(%{from: %{source: {_, schema}}}), do: schema
+  def extract_schema(schema), do: schema
 
   defp stringify_keys(map = %{}) do
     Enum.into(map, %{}, fn {k, v} -> {to_string(k), stringify_keys(v)} end)
