@@ -1,8 +1,6 @@
 defmodule Turbo.Ecto.Builder do
   @moduledoc false
 
-  alias Ecto.Query.Builder
-
   alias Turbo.Ecto.Builder.{Join, Where, OrderBy, LimitOffset}
   alias Turbo.Ecto.Hooks.{Search, Sort, Paginate}
 
@@ -88,9 +86,9 @@ defmodule Turbo.Ecto.Builder do
          {:ok, sorts} <- Sort.run(schema, params),
          {:ok, %Paginate{} = %{limit: limit, offset: offset}} <- Paginate.run(params) do
       relations = build_relations(searches, sorts)
-      {query, binding} = build_binding(queryable, relations)
+      binding = relations |> build_binding()
 
-      query
+      queryable
       |> join(relations)
       |> where(searches, binding)
       |> order_by(sorts, binding)
@@ -108,13 +106,10 @@ defmodule Turbo.Ecto.Builder do
   defp limit(query, limit, binding), do: LimitOffset.build(:limit, query, limit, binding)
   defp offset(query, offset, binding), do: LimitOffset.build(:offset, query, offset, binding)
 
-  defp build_binding(query, relations) do
-    bindings =
-      relations
-      |> List.insert_at(0, :query)
-      |> Enum.map(&Macro.var(&1, Elixir))
-
-    Builder.escape_binding(query, bindings)
+  defp build_binding(relations) do
+    relations
+    |> List.insert_at(0, :query)
+    |> Enum.map(&Macro.var(&1, Elixir))
   end
 
   defp build_relations(grouping, sorts) do

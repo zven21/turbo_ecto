@@ -23,7 +23,17 @@ defmodule Turbo.Ecto.Builder.Join do
   def apply_join(relation, query) do
     query
     |> Macro.escape()
-    |> Join.build(:inner, [query: 0], expr(relation), nil, nil, __ENV__)
+    |> Join.build(
+      :inner,
+      [{:query, [], Elixir}],
+      expr(relation),
+      nil,
+      nil,
+      nil,
+      nil,
+      nil,
+      __ENV__
+    )
     |> elem(0)
     |> Code.eval_quoted()
     |> elem(0)
@@ -34,8 +44,4 @@ defmodule Turbo.Ecto.Builder.Join do
       unquote(Macro.var(relation, Elixir)) in assoc(query, unquote(relation))
     end
   end
-
-  # defp join_by_assoc(assoc, queryable) do
-  #   join(queryable, :inner, [..., p1], p2 in assoc(p1, ^assoc))
-  # end
 end
