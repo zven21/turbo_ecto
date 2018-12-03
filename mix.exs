@@ -11,6 +11,7 @@ defmodule Turbo.Ecto.MixProject do
       version: @version,
       elixir: "~> 1.6",
       start_permanent: Mix.env() == :prod,
+      aliases: aliases(),
       deps: deps(),
       package: package(),
       elixirc_paths: elixirc_paths(Mix.env()),
@@ -54,4 +55,10 @@ defmodule Turbo.Ecto.MixProject do
 
   defp elixirc_paths(:test), do: ["lib", "priv", "test/support"]
   defp elixirc_paths(_), do: ["lib"]
+
+  defp aliases do
+    [
+      test: ["ecto.drop --quiet", "ecto.create --quiet", "ecto.migrate --quiet", "test", "credo --strict"]
+    ]
+  end
 end
