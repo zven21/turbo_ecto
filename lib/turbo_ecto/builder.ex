@@ -84,7 +84,8 @@ defmodule Turbo.Ecto.Builder do
 
     with {:ok, %Search{} = searches} <- Search.run(schema, params),
          {:ok, sorts} <- Sort.run(schema, params),
-         {:ok, %Paginate{} = %{limit: limit, offset: offset}} <- Paginate.run(params) do
+         {:ok, %Paginate{} = %{limit: limit, offset: offset}} <- Paginate.run(params)
+    do
       relations = build_relations(searches, sorts)
       binding = relations |> build_binding()
 
@@ -94,6 +95,8 @@ defmodule Turbo.Ecto.Builder do
       |> order_by(sorts, binding)
       |> limit(limit, binding)
       |> offset(offset, binding)
+    else
+      {:error, _} -> raise "Expected `params`, got #{inspect(params)}"
     end
   end
 

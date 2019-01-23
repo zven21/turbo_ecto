@@ -1,0 +1,32 @@
+<%= form_for @conn, Routes.post_path(@conn, :index), [method: :get, class: "form-inline"], fn f -> %>
+  <div class="form-group">
+    <%= turbo_search_input f, "q[title_or_body_like]", class: "form-control", placeholder: "title or body" %>
+  </div>
+  <button class="btn btn-primary">Search</button>
+<% end %>
+<table>
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Body</th>
+      <th>Published at</th>
+      <th>Visit count</th>
+      <th>Like count</th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for post <- @posts do %>
+    <tr>
+      <td><%= post.title %></td>
+      <td><%= post.body %></td>
+      <td><%= post.published_at %></td>
+      <td><%= post.visit_count %></td>
+      <td><%= post.like_count %></td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<div class="card-footer">
+  <%= render DummyWeb.SharedView, "_pagination.html", assigns %>
+</div>
