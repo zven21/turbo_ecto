@@ -63,7 +63,6 @@ defmodule Turbo.Ecto.Hooks.Search.Condition do
     if result, do: values, else: {:error, :value_is_empty}
   end
 
-  defp prepare_values(""), do: {:error, :value_is_empty}
   defp prepare_values(value) when is_bitstring(value), do: List.wrap(value)
   defp prepare_values(value), do: List.wrap(value)
 
