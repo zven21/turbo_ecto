@@ -121,7 +121,7 @@ $ cd dummy
 Run mix
 
 ```bash
-$ mix deps.get
+$ mix deps.get && yarn --cwd=assets
 ```
 
 Preparing database
