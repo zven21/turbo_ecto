@@ -84,8 +84,7 @@ defmodule Turbo.Ecto.Builder do
 
     with {:ok, %Search{} = searches} <- Search.run(schema, params),
          {:ok, sorts} <- Sort.run(schema, params),
-         {:ok, %Paginate{} = %{limit: limit, offset: offset}} <- Paginate.run(params)
-    do
+         {:ok, %Paginate{} = %{limit: limit, offset: offset}} <- Paginate.run(params) do
       relations = build_relations(searches, sorts)
       binding = relations |> build_binding()
 

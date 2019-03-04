@@ -58,7 +58,13 @@ defmodule Turbo.Ecto.MixProject do
 
   defp aliases do
     [
-      test: ["ecto.drop --quiet", "ecto.create --quiet", "ecto.migrate --quiet", "test", "credo --strict"]
+      test: [
+        "ecto.drop --quiet",
+        "ecto.create --quiet",
+        "ecto.migrate --quiet",
+        "test",
+        "credo --strict"
+      ]
     ]
   end
 end
