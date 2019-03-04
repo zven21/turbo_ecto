@@ -6,7 +6,7 @@ defmodule DummyWeb.PostController do
 
   def index(conn, params) do
     result = Post |> Turbo.Ecto.turbo(params)
-    render(conn, :index, posts: result.datas, paginate: result.paginate)
+    render(conn, :index, posts: result.entries, paginate: result.paginate)
   end
 
   def new(conn, _params) do

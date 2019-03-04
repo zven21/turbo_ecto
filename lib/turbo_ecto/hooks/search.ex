@@ -6,7 +6,7 @@ defmodule Turbo.Ecto.Hooks.Search do
   Inspire from: [ex_sieve](https://github.com/valyukov/ex_sieve/blob/master/lib/ex_sieve/node/grouping.ex)
   """
 
-  import Turbo.Ecto.Utils.HandleResult, only: [done: 1]
+  import Turbo.Ecto.Utils, only: [done: 1]
 
   alias Turbo.Ecto.Hooks.Search
   alias Search.Condition
@@ -74,7 +74,7 @@ defmodule Turbo.Ecto.Hooks.Search do
   end
 
   def run(schema, _) do
-    nil
+    %{}
     |> extract(schema)
     |> done()
   end

@@ -45,7 +45,7 @@ defmodule Turbo.Ecto do
   """
 
   alias Turbo.Ecto.Config, as: TConfig
-  alias Turbo.Ecto.Builder
+  alias Turbo.Ecto.{Builder, Utils}
   alias Turbo.Ecto.Hooks.Paginate
 
   @doc """
@@ -63,12 +63,24 @@ defmodule Turbo.Ecto do
   """
   @spec turbo(Ecto.Query.t(), Map.t(), Keyword.t()) :: Map.t()
   def turbo(queryable, params, opts \\ []) do
+    build_opts = uniq_merge(opts, TConfig.defaults())
+
+    entry_name = Keyword.get(build_opts, :entry_name)
+    paginate_name = Keyword.get(build_opts, :paginate_name)
+
     queryable = turboq(queryable, params)
 
     %{
-      datas: handle_query(queryable, opts),
-      paginate: get_paginate(queryable, params, opts)
+      entry_name => handle_query(queryable, build_opts),
+      paginate_name => get_paginate(queryable, params, build_opts)
     }
+    |> Utils.symbolize_keys()
+  end
+
+  defp uniq_merge(keyword1, keyword2) do
+    keyword2
+    |> Keyword.merge(keyword1)
+    |> Keyword.new()
   end
 
   @doc """
@@ -82,30 +94,12 @@ defmodule Turbo.Ecto do
 
   """
   @spec turboq(Ecto.Query.t(), Map.t()) :: Ecto.Query.t()
-  def turboq(queryable, params) do
-    Builder.run(queryable, params)
-  end
+  def turboq(queryable, params), do: Builder.run(queryable, params)
 
-  @doc """
-  Gets paginate info.
-
-  ## Example
-
-      iex> params = %{"per_page" => 5, "page" => 2}
-      iex> Turbo.Ecto.get_paginate(Turbo.Ecto.Product, params)
-      %{per_page: 5, current_page: 2, next_page: nil, prev_page: nil, total_count: 0, total_pages: 0}
-
-  """
-  @spec get_paginate(Ecto.Query.t(), Map.t(), Keyword.t()) :: Map.t()
-  def get_paginate(queryable, params, opts \\ []) do
-    build_opts = Keyword.put_new(opts, :repo, TConfig.repo())
-    Paginate.get_paginate(queryable, params, build_opts)
-  end
+  defp get_paginate(queryable, params, opts), do: Paginate.get_paginate(queryable, params, opts)
 
   defp handle_query(queryable, opts) do
-    build_opts = Keyword.put_new(opts, :repo, TConfig.repo())
-
-    case Keyword.get(build_opts, :repo) do
+    case Keyword.get(opts, :repo) do
       nil -> raise "Expected key `repo` in `opts`, got #{inspect(opts)}"
       repo -> apply(repo, :all, [queryable])
     end
