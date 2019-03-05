@@ -33,7 +33,7 @@ defmodule Turbo.Ecto.Hooks.Search.Attribute do
         nil
 
       assoc ->
-        key = String.replace_prefix(key, "#{assoc}.", "")
+        key = String.replace_prefix(key, "#{assoc}_", "")
         {assoc, get_name(module.__schema__(:association, assoc), key)}
     end
   end

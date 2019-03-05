@@ -62,7 +62,7 @@ You can also define other configurations with `entry_name` and `pagenate_name` i
 
 ```elixir
 
-  iex> params = %{"q" => %{"name_and_category.name_like" => "elixir"}, "s" => "inserted_at+asc", "per_page" => 20}
+  iex> params = %{"q" => %{"name_and_category_name_like" => "elixir"}, "s" => "inserted_at+asc", "per_page" => 20}
 
   iex> Turbo.Ecto.turbo(Turbo.Ecto.Product, params)
   %{
@@ -77,8 +77,8 @@ You can also define other configurations with `entry_name` and `pagenate_name` i
     }
   }
 
-  iex> params2 = %{"filter" => %{"name_like" => "elixir", "sort" => "inserted_at+asc"}}
-  iex> Turbo.Ecto.turbo(Turbo.Ecto.Product, params, [entry_name: "entries"])
+  iex> params2 = %{"filter" => %{"name_like" => "elixir"}, "sort" => "inserted_at+asc"}}
+  iex> Turbo.Ecto.turbo(Turbo.Ecto.Product, params2, [entry_name: "entries"])
   %{
     entries: [%Turbo.Ecto.Product{}],
     paginate: %{}
