@@ -27,18 +27,20 @@ Phoenix support `turbo_html`, check [this](https://github.com/zven21/turbo_html)
 ```elixir
 def deps do
   [
-    {:turbo_ecto, "~> 0.2.1"}
+    {:turbo_ecto, "~> 0.3.0"}
   ]
 end
 ```
 
-* Add the Repo of your app and the desired per_page to the `turbo_ecto` configuration in config.exs:
+* Add the Repo of your app and the desired per_page to the `turbo_ecto` configuration in `config.exs`:
 
 ```elixir
 config :turbo_ecto, Turbo.Ecto,
   repo: MyApp.Repo,
-  per_page: 10
+  per_page: 10,
 ```
+
+You can also define other configurations with `entry_name` and `pagenate_name` in `config.exs`.
 
 ## Examples
 
@@ -62,14 +64,9 @@ config :turbo_ecto, Turbo.Ecto,
 
   iex> params = %{"q" => %{"name_and_category.name_like" => "elixir"}, "s" => "inserted_at+asc", "per_page" => 20}
 
-  iex> Turbo.Ecto.turboq(Turbo.Ecto.Product, params)
-  #Ecto.Query<from p in Turbo.Ecto.Product, join: c in assoc(p, :category),
-  where: like(p.name, "%elixir%") and like(c.name, "%elixir%"),
-  order_by: [asc: p.inserted_at], limit: 20, offset: 0>
-
   iex> Turbo.Ecto.turbo(Turbo.Ecto.Product, params)
   %{
-    datas: [%Product{}],
+    datas: [%Turbo.Ecto.Product{}],
     paginate: %{
       current_page: 10,
       next_page: 11,
@@ -78,6 +75,13 @@ config :turbo_ecto, Turbo.Ecto,
       total_count: 100,
       total_pages: 20
     }
+  }
+
+  iex> params2 = %{"filter" => %{"name_like" => "elixir", "sort" => "inserted_at+asc"}}
+  iex> Turbo.Ecto.turbo(Turbo.Ecto.Product, params, [entry_name: "entries"])
+  %{
+    entries: [%Turbo.Ecto.Product{}],
+    paginate: %{}
   }
 
 ```
