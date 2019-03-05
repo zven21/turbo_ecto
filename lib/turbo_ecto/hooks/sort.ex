@@ -15,6 +15,9 @@ defmodule Turbo.Ecto.Hooks.Sort do
   ## Examples
 
   When sort with one field:
+      iex> params = %{}
+      iex> Turbo.Ecto.Hooks.Sort.run(Turbo.Ecto.Product, params)
+      {:ok,[]}
 
       iex> params = %{"s" => "inserted_at+desc"}
       iex> Turbo.Ecto.Hooks.Sort.run(Turbo.Ecto.Product, params)
@@ -55,20 +58,33 @@ defmodule Turbo.Ecto.Hooks.Sort do
 
   """
   @spec run(Ecto.Query.t(), Map.t()) :: any()
-  def run(schema, params) do
-    params
-    |> Map.pop("s", [])
+  def run(schema, params)
+
+  def run(schema, %{"s" => s}) do
+    s
     |> handle_sort(schema)
     |> result()
   end
 
-  defp handle_sort({value, _atom}, schema) when is_bitstring(value) do
+  def run(schema, %{"sort" => sort}) do
+    sort
+    |> handle_sort(schema)
+    |> result()
+  end
+
+  def run(schema, _) do
+    []
+    |> handle_sort(schema)
+    |> result()
+  end
+
+  defp handle_sort(value, schema) when is_bitstring(value) do
     value
     |> build(schema)
     |> List.wrap()
   end
 
-  defp handle_sort({values, _atom}, schema) do
+  defp handle_sort(values, schema) do
     values
     |> Enum.map(&build(&1, schema))
   end

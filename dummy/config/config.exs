@@ -27,7 +27,8 @@ config :phoenix, :json_library, Jason
 
 config :turbo_ecto, Turbo.Ecto,
   repo: Dummy.Repo,
-  per_page: 2
+  per_page: 2,
+  entry_name: "entries"
 
 config :turbo_html, Turbo.HTML, default_theme: :bootstrap
 

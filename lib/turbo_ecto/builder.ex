@@ -3,6 +3,7 @@ defmodule Turbo.Ecto.Builder do
 
   alias Turbo.Ecto.Builder.{Join, Where, OrderBy, LimitOffset}
   alias Turbo.Ecto.Hooks.{Search, Sort, Paginate}
+  alias Turbo.Ecto.Utils
 
   @doc """
   Builds a search `Ecto.Query.t` on top of a given `Ecto.Query.t` variable
@@ -80,12 +81,11 @@ defmodule Turbo.Ecto.Builder do
   @spec run(Ecto.Query.t(), Map.t()) :: Ecto.Query.t()
   def run(queryable, params) do
     schema = extract_schema(queryable)
-    params = stringify_keys(params)
+    params = Utils.stringify_keys(params)
 
     with {:ok, %Search{} = searches} <- Search.run(schema, params),
          {:ok, sorts} <- Sort.run(schema, params),
-         {:ok, %Paginate{} = %{limit: limit, offset: offset}} <- Paginate.run(params)
-    do
+         {:ok, %Paginate{} = %{limit: limit, offset: offset}} <- Paginate.run(params) do
       relations = build_relations(searches, sorts)
       binding = relations |> build_binding()
 
@@ -145,16 +145,4 @@ defmodule Turbo.Ecto.Builder do
   def extract_schema(%{from: %{source: %{query: subquery}}}), do: extract_schema(subquery)
   def extract_schema(%{from: %{source: {_, schema}}}), do: schema
   def extract_schema(schema), do: schema
-
-  defp stringify_keys(map = %{}) do
-    Enum.into(map, %{}, fn {k, v} -> {to_string(k), stringify_keys(v)} end)
-  end
-
-  defp stringify_keys([head | rest]) do
-    [stringify_keys(head) | stringify_keys(rest)]
-  end
-
-  defp stringify_keys(not_a_map) do
-    not_a_map
-  end
 end

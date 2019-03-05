@@ -15,12 +15,10 @@ defmodule Turbo.Ecto.Builder.OrderBy do
     |> elem(0)
   end
 
-  @doc """
-  [
-    asc: {:field, [], [{:query, [], Elixir}, :updated_at]},
-    desc: {:field, [], [{:query, [], Elixir}, :inserted_at]}
-  ]
-  """
+  # [
+  #   asc: {:field, [], [{:query, [], Elixir}, :updated_at]},
+  #   desc: {:field, [], [{:query, [], Elixir}, :inserted_at]}
+  # ]
   defp expr(%{direction: direction, attribute: %{name: name, parent: parent}}) do
     parent = Macro.var(parent, Elixir)
     quote do: {unquote(direction), field(unquote(parent), unquote(name))}
