@@ -37,7 +37,7 @@ end
 ```elixir
 config :turbo_ecto, Turbo.Ecto,
   repo: MyApp.Repo,
-  per_page: 10,
+  per_page: 10
 ```
 
 You can also define other configurations with `entry_name` and `pagenate_name` in `config.exs`.
