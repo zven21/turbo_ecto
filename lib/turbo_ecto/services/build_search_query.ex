@@ -35,6 +35,7 @@ defmodule Turbo.Ecto.Services.BuildSearchQuery do
 
   @search_types ~w(eq
                   like
+                  ilike
                   not_eq
                   cont
                   not_cont
