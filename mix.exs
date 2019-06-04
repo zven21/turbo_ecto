@@ -39,7 +39,7 @@ defmodule Turbo.Ecto.MixProject do
       {:ecto_sql, "~> 3.0"},
       {:postgrex, ">= 0.0.0", only: :test},
       {:ex_machina, "~> 2.2", only: :test},
-      {:excoveralls, "~> 0.10", only: :test},
+      {:excoveralls, "~> 0.10.5", only: :test},
       {:credo, "~> 0.10.0", only: [:dev, :test], runtime: false}
     ]
   end
@@ -62,8 +62,7 @@ defmodule Turbo.Ecto.MixProject do
         "ecto.drop --quiet",
         "ecto.create --quiet",
         "ecto.migrate --quiet",
-        "test",
-        "credo --strict"
+        "test"
       ]
     ]
   end
