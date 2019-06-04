@@ -61,6 +61,7 @@ defmodule Turbo.Ecto.Services.BuildSearchQuery do
                   not_null)
 
   @true_values [1, '1', 'T', 't', true, 'true', 'TRUE', "1", "T", "t", "true", "TRUE"]
+  @false_values [0, '0', 'F', 'f', false, 'false', 'TRUE', "0", "F", "f", "false", "FALSE"]
 
   def search_types, do: @search_types
 
@@ -184,6 +185,8 @@ defmodule Turbo.Ecto.Services.BuildSearchQuery do
       iex> alias Turbo.Ecto.Services.BuildSearchQuery
       iex> alias Turbo.Ecto.Hooks.Search.Attribute
       iex> BuildSearchQuery.handle_expr(:true, %Attribute{name: :available, parent: :query}, [true])
+      {:==, [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel], [{:field, [], [{:query, [], Elixir}, :available]}, {:^, [], [true]}]}
+      iex> BuildSearchQuery.handle_expr(:true, %Attribute{name: :available, parent: :query}, [false])
       {:!=, [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel], [{:field, [], [{:query, [], Elixir}, :available]}, {:^, [], [true]}]}
 
   When `search_type` is `:not_true`:
@@ -191,7 +194,9 @@ defmodule Turbo.Ecto.Services.BuildSearchQuery do
       iex> alias Turbo.Ecto.Services.BuildSearchQuery
       iex> alias Turbo.Ecto.Hooks.Search.Attribute
       iex> BuildSearchQuery.handle_expr(:not_true, %Attribute{name: :available, parent: :query}, [true])
-      {:!=, [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel], [{:field, [], [{:query, [], Elixir}, :available]}, {:^, [], [true]}]}
+      {:==, [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel], [{:field, [], [{:query, [], Elixir}, :available]}, {:^, [], [false]}]}
+      iex> BuildSearchQuery.handle_expr(:not_true, %Attribute{name: :available, parent: :query}, [false])
+      {:!=, [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel], [{:field, [], [{:query, [], Elixir}, :available]}, {:^, [], [false]}]}
 
   When `search_type` is `:false`:
 
@@ -199,6 +204,8 @@ defmodule Turbo.Ecto.Services.BuildSearchQuery do
       iex> alias Turbo.Ecto.Hooks.Search.Attribute
       iex> BuildSearchQuery.handle_expr(:false, %Attribute{name: :price, parent: :query}, [true])
       {:==, [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel], [{:field, [], [{:query, [], Elixir}, :price]}, {:^, [], [false]}]}
+      iex> BuildSearchQuery.handle_expr(:false, %Attribute{name: :price, parent: :query}, [false])
+      {:!=, [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel], [{:field, [], [{:query, [], Elixir}, :price]}, {:^, [], [false]}]}
 
   When `search_type` is `:not_false`:
 
@@ -206,6 +213,8 @@ defmodule Turbo.Ecto.Services.BuildSearchQuery do
       iex> alias Turbo.Ecto.Hooks.Search.Attribute
       iex> BuildSearchQuery.handle_expr(:not_false, %Attribute{name: :price, parent: :query}, [true])
       {:!=, [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel], [{:field, [], [{:query, [], Elixir}, :price]}, {:^, [], [false]}]}
+      iex> BuildSearchQuery.handle_expr(:not_false, %Attribute{name: :price, parent: :query}, [false])
+      {:==, [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel], [{:field, [], [{:query, [], Elixir}, :price]}, {:^, [], [false]}]}
 
   When `search_type` is `:null`:
 
@@ -213,12 +222,16 @@ defmodule Turbo.Ecto.Services.BuildSearchQuery do
       iex> alias Turbo.Ecto.Hooks.Search.Attribute
       iex> BuildSearchQuery.handle_expr(:null, %Attribute{name: :available, parent: :query}, [true])
       {:is_nil, [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel], [{:field, [], [{:query, [], Elixir}, :available]}]}
+      iex> BuildSearchQuery.handle_expr(:null, %Attribute{name: :available, parent: :query}, [false])
+      {:not, [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel], [{:is_nil, [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel], [{:field, [], [{:query, [], Elixir}, :available]}]}]}
 
   When `search_type` is `:not_null`:
 
       iex> alias Turbo.Ecto.Services.BuildSearchQuery
       iex> alias Turbo.Ecto.Hooks.Search.Attribute
       iex> BuildSearchQuery.handle_expr(:not_null, %Attribute{name: :available, parent: :query}, [true])
+      {:not, [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel], [{:is_nil, [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel], [{:field, [], [{:query, [], Elixir}, :available]}]}]}
+      iex> BuildSearchQuery.handle_expr(:not_null, %Attribute{name: :available, parent: :query}, [false])
       {:not, [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel], [{:is_nil, [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel], [{:field, [], [{:query, [], Elixir}, :available]}]}]}
 
   When `search_type` is `:present`:
@@ -227,6 +240,8 @@ defmodule Turbo.Ecto.Services.BuildSearchQuery do
       iex> alias Turbo.Ecto.Hooks.Search.Attribute
       iex> BuildSearchQuery.handle_expr(:present, %Attribute{name: :available, parent: :query}, [true])
       {:not, [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel], [{:or, [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel], [{:is_nil, [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel], [{:field, [], [{:query, [], Elixir}, :available]}]}, {:==, [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel], [{:field, [], [{:query, [], Elixir}, :available]}, {:^, [], [[]]}]}]}]}
+      iex> BuildSearchQuery.handle_expr(:present, %Attribute{name: :available, parent: :query}, [false])
+      {:or, [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel], [{:not, [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel], [{:is_nil, [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel], [{:field, [], [{:query, [], Elixir}, :available]}]}]}, {:!=, [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel], [{:field, [], [{:query, [], Elixir}, :available]}, {:^, [], [[]]}]}]}
 
   When `search_type` is `:blank`:
 
@@ -234,6 +249,26 @@ defmodule Turbo.Ecto.Services.BuildSearchQuery do
       iex> alias Turbo.Ecto.Hooks.Search.Attribute
       iex> BuildSearchQuery.handle_expr(:blank, %Attribute{name: :available, parent: :query}, [true])
       {:or, [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel], [{:is_nil, [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel], [{:field, [], [{:query, [], Elixir}, :available]}]}, {:==, [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel], [{:field, [], [{:query, [], Elixir}, :available]}, {:^, [], [[]]}]}]}
+      iex> BuildSearchQuery.handle_expr(:blank, %Attribute{name: :available, parent: :query}, [false])
+      {:or,
+             [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel],
+             [
+               {:not,
+                [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel],
+                [
+                  {:is_nil,
+                   [
+                     context: Turbo.Ecto.Services.BuildSearchQuery,
+                     import: Kernel
+                   ], [{:field, [], [{:query, [], Elixir}, :available]}]}
+                ]},
+               {:!=,
+                [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel],
+                [
+                  {:field, [], [{:query, [], Elixir}, :available]},
+                  {:^, [], [[]]}
+                ]}
+             ]}
 
   When `search_type` is `:between`:
 
@@ -318,35 +353,67 @@ defmodule Turbo.Ecto.Services.BuildSearchQuery do
   end
 
   def handle_expr(true, attribute, [value | _]) when value in @true_values do
+    handle_expr(:eq, attribute, [true])
+  end
+
+  def handle_expr(true, attribute, [value | _]) when value in @false_values do
     handle_expr(:not_eq, attribute, [true])
   end
 
   def handle_expr(:not_true, attribute, [value | _]) when value in @true_values do
-    handle_expr(:not_eq, attribute, [true])
+    handle_expr(:eq, attribute, [false])
+  end
+
+  def handle_expr(:not_true, attribute, [value | _]) when value in @false_values do
+    handle_expr(:not_eq, attribute, [false])
   end
 
   def handle_expr(false, attribute, [value | _]) when value in @true_values do
     handle_expr(:eq, attribute, [false])
   end
 
+  def handle_expr(false, attribute, [value | _]) when value in @false_values do
+    handle_expr(:not_eq, attribute, [false])
+  end
+
   def handle_expr(:not_false, attribute, [value | _]) when value in @true_values do
     handle_expr(:not_eq, attribute, [false])
+  end
+
+  def handle_expr(:not_false, attribute, [value | _]) when value in @false_values do
+    handle_expr(:eq, attribute, [false])
   end
 
   def handle_expr(:present, attribute, [value | _] = values) when value in @true_values do
     quote(do: not unquote(handle_expr(:blank, attribute, values)))
   end
 
+  def handle_expr(:present, attribute, [value | _] = values) when value in @false_values do
+    quote(do: unquote(handle_expr(:blank, attribute, values)))
+  end
+
   def handle_expr(:blank, attribute, [value | _]) when value in @true_values do
     quote(do: is_nil(unquote(field_expr(attribute))) or unquote(field_expr(attribute)) == ^'')
+  end
+
+  def handle_expr(:blank, attribute, [value | _]) when value in @false_values do
+    quote(do: not is_nil(unquote(field_expr(attribute))) or unquote(field_expr(attribute)) != ^'')
   end
 
   def handle_expr(:null, attribute, [value | _]) when value in @true_values do
     quote(do: is_nil(unquote(field_expr(attribute))))
   end
 
+  def handle_expr(:null, attribute, [value | _]) when value in @false_values do
+    quote(do: not is_nil(unquote(field_expr(attribute))))
+  end
+
   def handle_expr(:not_null, attribute, [value | _] = values) when value in @true_values do
     quote(do: not unquote(handle_expr(:null, attribute, values)))
+  end
+
+  def handle_expr(:not_null, attribute, [value | _] = values) when value in @false_values do
+    quote(do: unquote(handle_expr(:null, attribute, values)))
   end
 
   def handle_expr(:between, attribute, [hd | last] = values) when length(values) == 2 do
