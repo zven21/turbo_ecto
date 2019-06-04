@@ -13,7 +13,7 @@ defmodule Turbo.Ecto.Builder do
 
   When search_type is `:like`
 
-      iex> params = %{"q" => %{"name_like" => "aa"}}
+      iex> params = %{"q" => %{"name_like" => "elixir"}}
       iex> Turbo.Ecto.Builder.run(Turbo.Ecto.Product, params)
       #Ecto.Query<from p in Turbo.Ecto.Product, where: like(p.name, \"%elixir%\"), limit: 10, offset: 0>
 
@@ -21,7 +21,7 @@ defmodule Turbo.Ecto.Builder do
 
       iex> params = %{"q" => %{"name_ilike" => "elixir"}}
       iex> Turbo.Ecto.Builder.run(Turbo.Ecto.Product, params)
-      #Ecto.Query<from p in Turbo.Ecto.Product, where: like(p.name, \"%elixir%\"), limit: 10, offset: 0>
+      #Ecto.Query<from p in Turbo.Ecto.Product, where: ilike(p.name, \"%elixir%\"), limit: 10, offset: 0>
 
   When search_type is `:eq`
 
