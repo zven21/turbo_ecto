@@ -103,7 +103,6 @@ defmodule Turbo.Ecto.Hooks.Paginate do
 
   defp get_count(query, repo) do
     repo
-    |> apply(:all, [distinct(query, true)])
-    |> Enum.count()
+    |> apply(:aggregate, [query, :count, :id])
   end
 end
