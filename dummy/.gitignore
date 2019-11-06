@@ -32,6 +32,8 @@ npm-debug.log
 # we ignore priv/static. You may want to comment
 # this depending on your deployment strategy.
 /priv/static/
+/priv/plts/*.plt
+/priv/plts/*.plt.hash
 
 # Files matching config/*.secret.exs pattern contain sensitive
 # data and you should not commit them into version control.
