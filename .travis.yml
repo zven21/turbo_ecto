@@ -1,8 +1,8 @@
 language: elixir
 elixir:
-  - '1.6.4'
+  - 1.8
 otp_release:
-  - '20.3.2'
+  - 21.0
 addons:
   postgresql: '9.4'
 services:
@@ -11,6 +11,7 @@ cache:
   directories:
     - _build
     - deps
+    - priv/plts
 env:
   - MIX_ENV=test
 before_script:
@@ -18,3 +19,4 @@ before_script:
 script:
   - mix test
   - mix coveralls.travis
+  - mix dialyzer
