@@ -57,7 +57,7 @@ defmodule Turbo.Ecto.Hooks.Sort do
       }
 
   """
-  @spec run(Ecto.Query.t(), Map.t()) :: any()
+  @spec run(Ecto.Query.t(), map()) :: tuple()
   def run(schema, params)
 
   def run(schema, %{"s" => s}) do

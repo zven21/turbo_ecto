@@ -15,70 +15,70 @@ defmodule Turbo.Ecto.Builder do
 
       iex> params = %{"q" => %{"name_like" => "elixir"}}
       iex> Turbo.Ecto.Builder.run(Turbo.Ecto.Product, params)
-      #Ecto.Query<from p in Turbo.Ecto.Product, where: like(p.name, \"%elixir%\"), limit: 10, offset: 0>
+      #Ecto.Query<from p0 in Turbo.Ecto.Product, where: like(p0.name, \"%elixir%\"), limit: 10, offset: 0>
 
   When search_type is `:ilike`
 
       iex> params = %{"q" => %{"name_ilike" => "elixir"}}
       iex> Turbo.Ecto.Builder.run(Turbo.Ecto.Product, params)
-      #Ecto.Query<from p in Turbo.Ecto.Product, where: ilike(p.name, \"%elixir%\"), limit: 10, offset: 0>
+      #Ecto.Query<from p0 in Turbo.Ecto.Product, where: ilike(p0.name, \"%elixir%\"), limit: 10, offset: 0>
 
   When search_type is `:eq`
 
       iex> params = %{"q" => %{"price_eq" => 100}}
       iex> Turbo.Ecto.Builder.run(Turbo.Ecto.Product, params)
-      #Ecto.Query<from p in Turbo.Ecto.Product, where: p.price == ^100, limit: 10, offset: 0>
+      #Ecto.Query<from p0 in Turbo.Ecto.Product, where: p0.price == ^100, limit: 10, offset: 0>
 
   When search_type is `:gt`
 
       iex> params = %{"q" => %{"price_gt" => 100}}
       iex> Turbo.Ecto.Builder.run(Turbo.Ecto.Product, params)
-      #Ecto.Query<from p in Turbo.Ecto.Product, where: p.price > ^100, limit: 10, offset: 0>
+      #Ecto.Query<from p0 in Turbo.Ecto.Product, where: p0.price > ^100, limit: 10, offset: 0>
 
   When search_type is `:lt`
 
       iex> params = %{"q" => %{"price_lt" => 100}}
       iex> Turbo.Ecto.Builder.run(Turbo.Ecto.Product, params)
-      #Ecto.Query<from p in Turbo.Ecto.Product, where: p.price < ^100, limit: 10, offset: 0>
+      #Ecto.Query<from p0 in Turbo.Ecto.Product, where: p0.price < ^100, limit: 10, offset: 0>
 
   When search_type is `:gteq`
 
       iex> params = %{"q" => %{"price_gteq" => 100}}
       iex> Turbo.Ecto.Builder.run(Turbo.Ecto.Product, params)
-      #Ecto.Query<from p in Turbo.Ecto.Product, where: p.price >= ^100, limit: 10, offset: 0>
+      #Ecto.Query<from p0 in Turbo.Ecto.Product, where: p0.price >= ^100, limit: 10, offset: 0>
 
   When search_type is `:lteq`
 
       iex> params = %{"q" => %{"price_lteq" => 100}}
       iex> Turbo.Ecto.Builder.run(Turbo.Ecto.Product, params)
-      #Ecto.Query<from p in Turbo.Ecto.Product, where: p.price <= ^100, limit: 10, offset: 0>
+      #Ecto.Query<from p0 in Turbo.Ecto.Product, where: p0.price <= ^100, limit: 10, offset: 0>
 
   when use `and` symbol condition
 
       iex> params = %{"q" => %{"name_and_body_like" => "elixir"}}
       iex> Turbo.Ecto.Builder.run(Turbo.Ecto.Product, params)
-      #Ecto.Query<from p in Turbo.Ecto.Product, where: like(p.name, \"%elixir%\") and like(p.body, \"%elixir%\"), limit: 10, offset: 0>
+      #Ecto.Query<from p0 in Turbo.Ecto.Product, where: like(p0.name, \"%elixir%\") and like(p0.body, \"%elixir%\"), limit: 10, offset: 0>
 
   when use `or` symbol condition
 
       iex> params = %{"q" => %{"name_or_body_like" => "elixir"}}
       iex> Turbo.Ecto.Builder.run(Turbo.Ecto.Product, params)
-      #Ecto.Query<from p in Turbo.Ecto.Product, where: like(p.name, \"%elixir%\") or like(p.body, \"%elixir%\"), limit: 10, offset: 0>
+      #Ecto.Query<from p0 in Turbo.Ecto.Product, where: like(p0.name, \"%elixir%\") or like(p0.body, \"%elixir%\"), limit: 10, offset: 0>
 
   when use `assoc`
 
       iex> params = %{"q" => %{"category_name_like" => "elixir"}}
       iex> Turbo.Ecto.Builder.run(Turbo.Ecto.Product, params)
-      #Ecto.Query<from p in Turbo.Ecto.Product, join: c in assoc(p, :category), where: like(c.name, \"%elixir%\"), limit: 10, offset: 0>
+      #Ecto.Query<from p0 in Turbo.Ecto.Product, join: c1 in assoc(p0, :category), where: like(c1.name, \"%elixir%\"), limit: 10, offset: 0>
 
   when use `and` && `or` && `assoc` condition
 
       iex> params = %{"q" => %{"category_name_or_name_and_body_like" => "elixir"}}
       iex> Turbo.Ecto.Builder.run(Turbo.Ecto.Product, params)
-      #Ecto.Query<from p in Turbo.Ecto.Product, join: c in assoc(p, :category), where: like(p.body, \"%elixir%\") or (like(c.name, \"%elixir%\") or like(p.name, \"%elixir%\")), limit: 10, offset: 0>
+      #Ecto.Query<from p0 in Turbo.Ecto.Product, join: c1 in assoc(p0, :category), where: like(p0.body, \"%elixir%\") or (like(c1.name, \"%elixir%\") or like(p0.name, \"%elixir%\")), limit: 10, offset: 0>
 
   """
-  @spec run(Ecto.Query.t(), Map.t()) :: Ecto.Query.t()
+  @spec run(Ecto.Query.t(), map()) :: Ecto.Query.t()
   def run(queryable, params) do
     schema = extract_schema(queryable)
     params = Utils.stringify_keys(params)
@@ -142,6 +142,7 @@ defmodule Turbo.Ecto.Builder do
     acc
   end
 
+  @spec extract_schema(map() | Ecto.Query.t()) :: Ecto.Query.t()
   def extract_schema(%{from: %{source: %{query: subquery}}}), do: extract_schema(subquery)
   def extract_schema(%{from: %{source: {_, schema}}}), do: schema
   def extract_schema(schema), do: schema

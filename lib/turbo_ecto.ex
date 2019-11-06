@@ -39,7 +39,7 @@ defmodule Turbo.Ecto do
     ```elixir
     iex> params = %{"q" => %{"product_name_or_name_like" => "elixir"}}
     iex> Turbo.Ecto.turboq(Turbo.Ecto.Variant, params)
-    #Ecto.Query<from v in Turbo.Ecto.Variant, join: p in assoc(v, :product), where: like(p.name, \"%elixir%\") or like(v.name, \"%elixir%\"), limit: 10, offset: 0>
+    #Ecto.Query<from v0 in Turbo.Ecto.Variant, join: p1 in assoc(v0, :product), where: like(p1.name, \"%elixir%\") or like(v0.name, \"%elixir%\"), limit: 10, offset: 0>
     ```
 
   """
@@ -61,7 +61,7 @@ defmodule Turbo.Ecto do
       }
 
   """
-  @spec turbo(Ecto.Query.t(), Map.t(), Keyword.t()) :: Map.t()
+  @spec turbo(Ecto.Query.t(), map(), keyword()) :: map()
   def turbo(queryable, params, opts \\ []) do
     build_opts = uniq_merge(opts, TConfig.defaults())
 
@@ -90,10 +90,10 @@ defmodule Turbo.Ecto do
 
       iex> params = %{"q" => %{"name_or_body_like" => "elixir"}, "s" => "updated_at+asc", "per_page" => 5, "page" => 1}
       iex> Turbo.Ecto.turboq(Turbo.Ecto.Product, params)
-      #Ecto.Query<from p in Turbo.Ecto.Product, where: like(p.name, \"%elixir%\") or like(p.body, \"%elixir%\"), order_by: [asc: p.updated_at], limit: 5, offset: 0>
+      #Ecto.Query<from p0 in Turbo.Ecto.Product, where: like(p0.name, \"%elixir%\") or like(p0.body, \"%elixir%\"), order_by: [asc: p0.updated_at], limit: 5, offset: 0>
 
   """
-  @spec turboq(Ecto.Query.t(), Map.t()) :: Ecto.Query.t()
+  @spec turboq(Ecto.Query.t(), map()) :: Ecto.Query.t()
   def turboq(queryable, params), do: Builder.run(queryable, params)
 
   defp get_paginate(queryable, params, opts), do: Paginate.get_paginate(queryable, params, opts)

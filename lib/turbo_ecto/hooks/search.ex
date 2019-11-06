@@ -58,7 +58,7 @@ defmodule Turbo.Ecto.Hooks.Search do
       }
 
   """
-  @spec run(Ecto.Query.t(), Map.t()) :: any()
+  @spec run(Ecto.Query.t(), map()) :: tuple()
   def run(schema, params)
 
   def run(schema, %{"q" => q}) do

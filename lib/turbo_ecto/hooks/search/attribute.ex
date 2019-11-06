@@ -17,7 +17,6 @@ defmodule Turbo.Ecto.Hooks.Search.Attribute do
     * Support multi table assoc, limit: 5.
 
   """
-  @spec extract(String.t(), Ecto.Query.t()) :: t() | {:error, :attribute_not_found}
   def extract(key, module) do
     case get_name(module, key) || get_assoc_name(module, key) do
       nil -> {:error, :attribute_not_found}
