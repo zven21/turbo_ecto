@@ -23,3 +23,7 @@ erl_crash.dump
 turbo_ecto-*.tar
 .elixir_ls/
 
+# dialyxir
+/priv/plts/*.plt
+/priv/plts/*.plt.has
+
