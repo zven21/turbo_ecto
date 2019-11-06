@@ -279,7 +279,7 @@ defmodule Turbo.Ecto.Services.BuildSearchQuery do
 
   """
 
-  @spec handle_expr(Atom.t(), %Attribute{}, Keyword.t()) :: Atom.t()
+  @spec handle_expr(atom(), %Attribute{}, list()) :: tuple()
   def handle_expr(:like, attribute, [value | _]) do
     quote do: like(unquote(field_expr(attribute)), unquote("%#{value}%"))
   end

@@ -16,7 +16,7 @@ defmodule Turbo.Ecto.Utils do
       %{a: 1, b: %{c: 3, d: 4}}
 
   """
-  @spec symbolize_keys(Map.t()) :: Map.t()
+  @spec symbolize_keys(map()) :: map()
   def symbolize_keys(map) do
     Enum.reduce(map, %{}, fn {k, v}, m ->
       v =
@@ -43,7 +43,7 @@ defmodule Turbo.Ecto.Utils do
     %{"a" => 1, "b" => %{"c" => 3, "d" => 4}}
 
   """
-  @spec stringify_keys(Map.t()) :: Map.t()
+  @spec stringify_keys(map()) :: map()
   def stringify_keys(map = %{}) do
     Enum.into(map, %{}, fn {k, v} -> {to_string(k), stringify_keys(v)} end)
   end

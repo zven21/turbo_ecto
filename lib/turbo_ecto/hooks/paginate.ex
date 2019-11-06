@@ -24,7 +24,7 @@ defmodule Turbo.Ecto.Hooks.Paginate do
       {:ok, %Turbo.Ecto.Hooks.Paginate{limit: 10, offset: 0}}
 
   """
-  @spec run(Map.t()) :: {:ok, Map.t()}
+  @spec run(map()) :: {:ok, t()}
   def run(params) do
     params
     |> format_params()
@@ -55,7 +55,7 @@ defmodule Turbo.Ecto.Hooks.Paginate do
   @doc """
   Returns the paginate info.
   """
-  @spec get_paginate(Ecto.Query.t(), Map.t(), Keyword.t()) :: Map.t()
+  @spec get_paginate(Ecto.Query.t(), map(), Keyword.t()) :: map()
   def get_paginate(queryable, params, opts) do
     formated_params = format_params(params)
 

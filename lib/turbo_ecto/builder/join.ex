@@ -1,7 +1,7 @@
 defmodule Turbo.Ecto.Builder.Join do
   @moduledoc false
 
-  alias Ecto.Query.Builder.Join
+  alias Ecto.Query.Builder.Join, as: Join
 
   @doc """
   Builds a quoted join expression.
@@ -11,15 +11,15 @@ defmodule Turbo.Ecto.Builder.Join do
       iex> query = Turbo.Ecto.Variant
       iex> relations = [:product, :prototypes]
       iex> Turbo.Ecto.Builder.Join.build(query, relations)
-      #Ecto.Query<from v in Turbo.Ecto.Variant, join: p0 in assoc(v, :product), join: p1 in assoc(v, :prototypes)>
+      #Ecto.Query<from v0 in Turbo.Ecto.Variant, join: p1 in assoc(v0, :product), join: p2 in assoc(v0, :prototypes)>
 
   """
-  @spec build(Macro.t(), [Macro.t()]) :: Macro.t()
+  @spec build(Ecto.Query.t(), [atom()]) :: Ecto.Query.t()
   def build(query, relations) do
     relations |> Enum.reduce(query, &apply_join(&1, &2))
   end
 
-  @spec apply_join(Macro.t(), Ecto.Queryable.t()) :: Ecto.Query.t() :: no_return()
+  @spec apply_join(atom(), Ecto.Queryable.t()) :: Ecto.Query.t()
   def apply_join(relation, query) do
     query
     |> Macro.escape()
