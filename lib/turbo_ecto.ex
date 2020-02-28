@@ -99,9 +99,11 @@ defmodule Turbo.Ecto do
   defp get_paginate(queryable, params, opts), do: Paginate.get_paginate(queryable, params, opts)
 
   defp handle_query(queryable, opts) do
+    prefix = Keyword.get(opts, :prefix)
+
     case Keyword.get(opts, :repo) do
       nil -> raise "Expected key `repo` in `opts`, got #{inspect(opts)}"
-      repo -> apply(repo, :all, [queryable])
+      repo -> apply(repo, :all, [queryable |> Map.put(:prefix, prefix)])
     end
   end
 end
