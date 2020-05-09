@@ -39,7 +39,7 @@ defmodule Turbo.Ecto.MixProject do
       {:ecto_sql, "~> 3.0"},
       {:postgrex, ">= 0.0.0", only: :test},
       {:ex_machina, "~> 2.2", only: :test},
-      {:excoveralls, "~> 0.10.5", only: :test},
+      {:excoveralls, "~> 0.12.3", only: :test},
       {:credo, "~> 1.4.0", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.0.0-rc.7", only: [:dev], runtime: false}
     ]
