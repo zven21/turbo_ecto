@@ -12,7 +12,7 @@ defmodule Turbo.Ecto.Utils do
   ## Examples
 
       iex> map = %{"a" => 1, "b" => %{"c" => 3, "d" => 4}}
-      iex> symbolize_keys(map)
+      iex> Turbo.Ecto.Utils.symbolize_keys(map)
       %{a: 1, b: %{c: 3, d: 4}}
 
   """
@@ -39,7 +39,7 @@ defmodule Turbo.Ecto.Utils do
   ## Example
 
     iex> map = %{a: 1, b: %{c: 3, d: 4}}
-    iex> stringify_keys(map)
+    iex> Turbo.Ecto.Utils.stringify_keys(map)
     %{"a" => 1, "b" => %{"c" => 3, "d" => 4}}
 
   """
@@ -61,13 +61,13 @@ defmodule Turbo.Ecto.Utils do
 
   ## Examples
 
-      iex> Hcbizchat.Util.HandleConvert.compaction!(%{nil_nil: nil, not_nil: "a value", nested: %{nil_val: nil, other: "other"}})
+      iex> Turbo.Ecto.Utils.compaction!(%{nil_nil: nil, not_nil: "a value", nested: %{nil_val: nil, other: "other"}})
       %{not_nil: "a value", nested: %{other: "other"}}
 
-      iex> Hcbizchat.Util.HandleConvert.compaction!(%{nil_nil: nil, not_nil: "a value", nested: %{nil_val: nil, other: "other", nested_empty: %{}}})
+      iex> Turbo.Ecto.Utils.compaction!(%{nil_nil: nil, not_nil: "a value", nested: %{nil_val: nil, other: "other", nested_empty: %{}}})
       %{not_nil: "a value", nested: %{other: "other"}}
 
-      iex> Hcbizchat.Util.HandleConvert.compaction!([nil, "string", %{nil_nil: nil, not_nil: "a value", nested: %{nil_val: nil, other: "other", nested_empty: %{}}}, ["nested", nil, 2]])
+      iex> Turbo.Ecto.Utils.compaction!([nil, "string", %{nil_nil: nil, not_nil: "a value", nested: %{nil_val: nil, other: "other", nested_empty: %{}}}, ["nested", nil, 2]])
       ["string", %{not_nil: "a value", nested: %{other: "other"}}, ["nested", 2]]
 
   """
@@ -108,15 +108,15 @@ defmodule Turbo.Ecto.Utils do
 
   ## Examples
 
-      iex> Hcbizchat.Util.HandleConvert.compactify!(%{nil_key: nil, not_nil: "nil"})
+      iex> Turbo.Ecto.Utils.compactify!(%{nil_key: nil, not_nil: "nil"})
       %{not_nil: "nil"}
-      iex> Hcbizchat.Util.HandleConvert.compactify!([1, nil, "string", %{key: :value}])
+      iex> Turbo.Ecto.Utils.compactify!([1, nil, "string", %{key: :value}])
       [1, "string", %{key: :value}]
-      iex> Hcbizchat.Util.HandleConvert.compactify!([a: nil, b: 2, c: "string"])
+      iex> Turbo.Ecto.Utils.compactify!([a: nil, b: 2, c: "string"])
       [b: 2, c: "string"]
-      iex> Hcbizchat.Util.HandleConvert.compactify!(%{empty: %{}, not: "not"})
+      iex> Turbo.Ecto.Utils.compactify!(%{empty: %{}, not: "not"})
       %{not: "not"}
-      iex> Hcbizchat.Util.HandleConvert.compactify!({"not", "a map"})
+      iex> Turbo.Ecto.Utils.compactify!({"not", "a map"})
       ** (ArgumentError) expecting a map or a list, got: {"not", "a map"}
 
   """
