@@ -55,4 +55,93 @@ defmodule Turbo.Ecto.Utils do
   def stringify_keys(not_a_map) do
     not_a_map
   end
+
+  @doc """
+  At the map object or list object, delete the key with Value is_nil or == "", and recursion is also considered.
+
+  ## Examples
+
+      iex> Hcbizchat.Util.HandleConvert.compaction!(%{nil_nil: nil, not_nil: "a value", nested: %{nil_val: nil, other: "other"}})
+      %{not_nil: "a value", nested: %{other: "other"}}
+
+      iex> Hcbizchat.Util.HandleConvert.compaction!(%{nil_nil: nil, not_nil: "a value", nested: %{nil_val: nil, other: "other", nested_empty: %{}}})
+      %{not_nil: "a value", nested: %{other: "other"}}
+
+      iex> Hcbizchat.Util.HandleConvert.compaction!([nil, "string", %{nil_nil: nil, not_nil: "a value", nested: %{nil_val: nil, other: "other", nested_empty: %{}}}, ["nested", nil, 2]])
+      ["string", %{not_nil: "a value", nested: %{other: "other"}}, ["nested", 2]]
+
+  """
+  @spec compaction!(Map.t() | List.t()) :: Map.t() | List.t() | %ArgumentError{}
+  def compaction!(value)
+
+  def compaction!(value) when is_map(value) do
+    compactor = fn {k, v}, acc ->
+      cond do
+        is_map(v) and Enum.empty?(v) -> acc
+        is_map(v) or is_list(v) -> Map.put_new(acc, k, compaction!(v))
+        true -> Map.put_new(acc, k, v)
+      end
+    end
+
+    value
+    |> Enum.reduce(%{}, compactor)
+    |> compactify!
+  end
+
+  def compaction!(value) when is_list(value) do
+    compactor = fn elem, acc ->
+      cond do
+        is_list(elem) and Enum.empty?(elem) -> acc
+        is_list(elem) or is_map(elem) -> acc ++ [compaction!(elem)]
+        is_nil(elem) -> acc
+        true -> acc ++ [elem]
+      end
+    end
+
+    value
+    |> Enum.reduce([], compactor)
+    |> compactify!
+  end
+
+  @doc """
+  Takes a map or list and removes keys or elements that have nil or empty values, or are empty maps.
+
+  ## Examples
+
+      iex> Hcbizchat.Util.HandleConvert.compactify!(%{nil_key: nil, not_nil: "nil"})
+      %{not_nil: "nil"}
+      iex> Hcbizchat.Util.HandleConvert.compactify!([1, nil, "string", %{key: :value}])
+      [1, "string", %{key: :value}]
+      iex> Hcbizchat.Util.HandleConvert.compactify!([a: nil, b: 2, c: "string"])
+      [b: 2, c: "string"]
+      iex> Hcbizchat.Util.HandleConvert.compactify!(%{empty: %{}, not: "not"})
+      %{not: "not"}
+      iex> Hcbizchat.Util.HandleConvert.compactify!({"not", "a map"})
+      ** (ArgumentError) expecting a map or a list, got: {"not", "a map"}
+
+  """
+  def compactify!(map) when is_map(map) do
+    map
+    |> Enum.reject(fn {_k, v} -> is_nil(v) || is_empty_string(v) || empty_map(v) end)
+    |> Enum.into(%{})
+  end
+
+  def compactify!(list) when is_list(list) do
+    list
+    |> Keyword.keyword?()
+    |> compactify!(list)
+  end
+
+  def compactify!(not_map_or_list),
+    do:
+      raise(ArgumentError, message: "expecting a map or a list, got: #{inspect(not_map_or_list)}")
+
+  def compactify!(true, list), do: Enum.reject(list, fn {_k, v} -> is_nil(v) end)
+
+  def compactify!(false, list), do: Enum.reject(list, fn elem -> is_nil(elem) end)
+
+  defp empty_map(map),
+    do: is_map(map) && not Map.has_key?(map, :__struct__) && Enum.empty?(map)
+
+  defp is_empty_string(s), do: s == ""
 end
