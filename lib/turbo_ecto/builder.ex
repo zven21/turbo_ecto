@@ -81,7 +81,12 @@ defmodule Turbo.Ecto.Builder do
   @spec run(Ecto.Query.t(), map()) :: Ecto.Query.t()
   def run(queryable, params) do
     schema = extract_schema(queryable)
-    params = Utils.stringify_keys(params)
+
+    # make params is compaction stringify_keys
+    params =
+      params
+      |> Utils.stringify_keys()
+      |> Utils.compaction!()
 
     with {:ok, %Search{} = searches} <- Search.run(schema, params),
          {:ok, sorts} <- Sort.run(schema, params),

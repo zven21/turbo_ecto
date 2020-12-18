@@ -1,7 +1,7 @@
 defmodule Turbo.Ecto.MixProject do
   use Mix.Project
 
-  @version "0.5.1"
+  @version "0.6.0"
   @github "https://github.com/zven21/turbo_ecto"
 
   def project do
@@ -38,10 +38,9 @@ defmodule Turbo.Ecto.MixProject do
       {:ex_doc, ">= 0.0.0", only: :dev},
       {:ecto_sql, "~> 3.0"},
       {:postgrex, ">= 0.0.0", only: :test},
-      {:ex_machina, "~> 2.2", only: :test},
-      {:excoveralls, "~> 0.12.3", only: :test},
-      {:credo, "~> 1.5.2", only: [:dev, :test], runtime: false},
-      {:dialyxir, "~> 1.0.0-rc.7", only: [:dev], runtime: false}
+      {:ex_machina, "~> 2.4", only: :test},
+      {:excoveralls, "~> 0.13.3", only: :test},
+      {:credo, "~> 1.5.2", only: [:dev, :test], runtime: false}
     ]
   end
 
