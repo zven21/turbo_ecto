@@ -60,6 +60,15 @@ defmodule Turbo.Ecto do
         datas: []
       }
 
+      iex> import Ecto.Query
+      iex> params = %{"q" => %{"name_or_product_name_like" => "elixir", "price_eq" => "1"}, "s" => "updated_at+asc", "per_page" => 5, "page" => 1}
+      iex> callback = fn queryable -> queryable |> select([:name]) end
+      iex> Turbo.Ecto.turbo(Turbo.Ecto.Variant, params, callback: callback)
+      %{
+        paginate: %{current_page: 1, per_page: 5, next_page: nil, prev_page: nil, total_count: 0, total_pages: 0},
+        datas: []
+      }
+
   """
   @spec turbo(Ecto.Query.t(), map(), keyword()) :: map()
   def turbo(queryable, params, opts \\ []) do
@@ -68,8 +77,9 @@ defmodule Turbo.Ecto do
     entry_name = Keyword.get(build_opts, :entry_name)
     paginate_name = Keyword.get(build_opts, :paginate_name)
     prefix = Keyword.get(build_opts, :prefix)
+    callback = Keyword.get(build_opts, :callback, fn queryable -> queryable end)
 
-    queryable = queryable |> turboq(params) |> Map.put(:prefix, prefix)
+    queryable = queryable |> turboq(params) |> callback.() |> Map.put(:prefix, prefix)
 
     %{
       entry_name => handle_query(queryable, build_opts),
