@@ -143,14 +143,18 @@ defmodule Turbo.Ecto.Services.BuildSearchQuery do
       iex> alias Turbo.Ecto.Services.BuildSearchQuery
       iex> alias Turbo.Ecto.Hooks.Search.Attribute
       iex> BuildSearchQuery.handle_expr(:in, %Attribute{name: :price, parent: :query}, ["10", "20"])
-      {:in, [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel], [{:field, [], [{:query, [], Elixir}, :price]}, ["10", "20"]]}
+      {:in, [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel], [{:field, [], [{:query, [], Elixir}, :price]}, {:^, [], [["10", "20"]]}]}
 
   When `search_type` is `:not_in`:
 
       iex> alias Turbo.Ecto.Services.BuildSearchQuery
       iex> alias Turbo.Ecto.Hooks.Search.Attribute
       iex> BuildSearchQuery.handle_expr(:not_in, %Attribute{name: :price, parent: :query}, ["10", "20"])
-      {:not, [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel], [{:in, [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel], [{:field, [], [{:query, [], Elixir}, :price]}, ["10", "20"]]}]}
+      {
+        :not,
+        [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel],
+        [{:in, [context: Turbo.Ecto.Services.BuildSearchQuery, import: Kernel], [{:field, [], [{:query, [], Elixir}, :price]}, {:^, [], [["10", "20"]]}]}]
+      }
 
   When `search_type` is `:start_with`:
 
@@ -321,19 +325,19 @@ defmodule Turbo.Ecto.Services.BuildSearchQuery do
   end
 
   def handle_expr(:in, attribute, values) do
-    quote do: unquote(field_expr(attribute)) in unquote(values)
+    quote do: unquote(field_expr(attribute)) in ^unquote(values)
   end
 
   def handle_expr(:not_in, attribute, values) do
-    quote do: not (unquote(field_expr(attribute)) in unquote(values))
+    quote do: not (unquote(field_expr(attribute)) in ^unquote(values))
   end
 
   def handle_expr(:matches, attribute, [value | _]) do
-    quote do: ilike(unquote(field_expr(attribute)), unquote(value))
+    quote do: ilike(unquote(field_expr(attribute)), ^unquote(value))
   end
 
   def handle_expr(:does_not_match, attribute, [value | _]) do
-    quote do: not ilike(unquote(field_expr(attribute)), unquote(value))
+    quote do: not ilike(unquote(field_expr(attribute)), ^unquote(value))
   end
 
   def handle_expr(:start_with, attribute, [value | _]) do
