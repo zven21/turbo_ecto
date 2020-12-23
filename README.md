@@ -27,7 +27,7 @@ Phoenix support `turbo_html`, check [this](https://github.com/zven21/turbo_html)
 ```elixir
 def deps do
   [
-    {:turbo_ecto, "~> 0.6.1"}
+    {:turbo_ecto, "~> 0.6.2"}
   ]
 end
 ```
@@ -62,8 +62,7 @@ You can also define other configurations with `entry_name` and `pagenate_name` i
 
 ```elixir
 
-  iex> params = %{"q" => %{"name_and_category_name_like" => "elixir"}, "s" => "inserted_at+asc", "per_page" => 20}
-
+  iex> params = %{"q" => %{"name_and_category_name_like" => "elixir"}, "s" => "inserted_at+asc", "page" = 0, "per_page" => 20}
   iex> Turbo.Ecto.turbo(Turbo.Ecto.Product, params)
   %{
     datas: [%Turbo.Ecto.Product{}],
@@ -76,15 +75,33 @@ You can also define other configurations with `entry_name` and `pagenate_name` i
       total_pages: 20
     }
   }
-
-  iex> params2 = %{"filter" => %{"name_like" => "elixir"}, "sort" => "inserted_at+asc"}}
-  iex> Turbo.Ecto.turbo(Turbo.Ecto.Product, params2, [entry_name: "entries"])
-  %{
-    entries: [%Turbo.Ecto.Product{}],
-    paginate: %{}
-  }
-
 ```
+
+### The 2 more commonly used api are as follows：
+
+#### `Turbo.Ecto.turbo(queryable, params, opts \\ [])`
+
+1 queryable: receives a schema object or an Ecto.Query.t() object
+
+2 params: supports 4 parameters.
+* `q` or `filter` to receive pattern matching information, e.g. ```params = %{"q" ⇒ %{"name_like" ⇒ "elixir"}}``` or ```params = %{"filter" ⇒ %{"name_like" ⇒ "elixir"}```
+* `s` or `sort` Receive sort information ```params = %{"sort" ⇒ "position+asc"}``` or ```params = %{"s" ⇒ "inserted_at+desc"}```
+* `page` Receive query page number ```params = %{"page" ⇒ 1}```
+* `per_page` Receive the number of pages ```params = %{"per_page" ⇒ 20}```
+
+3 opts: currently receives the following information:
+
+* `paginate_name`: sets the pagination key value of the returned result
+* `entry_name`: sets the key value of the returned result object
+* `prefix`: table prefix
+* `with_paginate`: whether to include pagination information, default `true`
+* `callback`: callback processing for `queryable`
+
+#### `Turbo.Ecto.turboq(queryable, params, opts)`
+
+Returns an Ecto.Query.t() object
+
+Translated with www.DeepL.com/Translator (free version)
 
 More example pls move: [docs](https://hexdocs.pm/turbo_ecto/api-reference.html)
 

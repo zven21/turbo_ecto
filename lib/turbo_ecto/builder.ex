@@ -101,6 +101,8 @@ defmodule Turbo.Ecto.Builder do
       |> limit(limit, binding)
       |> offset(offset, binding)
     else
+      {:error, :attribute_not_found} -> raise "attribute_not_found, got #{inspect(params)}"
+      {:error, :search_type_not_found} -> raise "search_type_not_found, got #{inspect(params)}"
       {:error, _} -> raise "Expected `params`, got #{inspect(params)}"
     end
   end
