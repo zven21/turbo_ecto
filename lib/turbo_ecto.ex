@@ -73,18 +73,18 @@ defmodule Turbo.Ecto do
 
     iex> params = %{"q" => %{"name_or_product_name_like" => "elixir", "price_eq" => "1"}, "s" => "updated_at+asc", "per_page" => 5, "page" => 1}
     iex> Turbo.Ecto.turbo(Turbo.Ecto.Variant, params, with_paginate: false)
-    %{}
+    []
 
   """
   @spec turbo(Ecto.Query.t(), map(), keyword()) :: map()
   def turbo(queryable, params, opts \\ []) do
     build_opts = uniq_merge(opts, TConfig.defaults())
 
-    entry_name = Keyword.get(build_opts, :entry_name)
-    paginate_name = Keyword.get(build_opts, :paginate_name)
-    prefix = Keyword.get(build_opts, :prefix)
+    entry_name = Keyword.get(build_opts, :entry_name, "entries")
+    paginate_name = Keyword.get(build_opts, :paginate_name, "datas")
     with_paginate = Keyword.get(build_opts, :with_paginate, true)
     callback = Keyword.get(build_opts, :callback, fn queryable -> queryable end)
+    prefix = Keyword.get(build_opts, :prefix)
 
     queryable =
       queryable
@@ -106,7 +106,6 @@ defmodule Turbo.Ecto do
         |> exclude(:limit)
         |> exclude(:offset)
         |> handle_query(build_opts)
-        |> Utils.symbolize_keys()
     end
   end
 
