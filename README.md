@@ -81,27 +81,24 @@ You can also define other configurations with `entry_name` and `pagenate_name` i
 
 #### `Turbo.Ecto.turbo(queryable, params, opts \\ [])`
 
-1 queryable: receives a schema object or an Ecto.Query.t() object
+* 1 queryable: receives a schema object or an Ecto.Query.t() object
 
-2 params: supports 4 parameters.
-* `q` or `filter` to receive pattern matching information, e.g. ```params = %{"q" ⇒ %{"name_like" ⇒ "elixir"}}``` or ```params = %{"filter" ⇒ %{"name_like" ⇒ "elixir"}```
-* `s` or `sort` Receive sort information ```params = %{"sort" ⇒ "position+asc"}``` or ```params = %{"s" ⇒ "inserted_at+desc"}```
-* `page` Receive query page number ```params = %{"page" ⇒ 1}```
-* `per_page` Receive the number of pages ```params = %{"per_page" ⇒ 20}```
+* 2 params: supports 4 parameters.
+  - `q` or `filter` to receive pattern matching information, e.g. ```params = %{"q" ⇒ %{"name_like" ⇒ "elixir"}}``` or ```params = %{"filter" ⇒ %{"name_like" ⇒ "elixir"}```
+  - `s` or `sort` Receive sort information. e.g. ```params = %{"sort" ⇒ "position+asc"}``` or ```params = %{"s" ⇒ "inserted_at+desc"}```
+  - `page` Receive query page number. e.g. ```params = %{"page" ⇒ 1}```
+  - `per_page` Receive the number of pages. e.g. ```params = %{"per_page" ⇒ 20}```
 
-3 opts: currently receives the following information:
-
-* `paginate_name`: sets the pagination key value of the returned result
-* `entry_name`: sets the key value of the returned result object
-* `prefix`: table prefix
-* `with_paginate`: whether to include pagination information, default `true`
-* `callback`: callback processing for `queryable`
+* 3 opts: currently receives the following information:
+  - `paginate_name`: sets the pagination key value of the returned result
+  - `entry_name`: sets the key value of the returned result object
+  - `prefix`: table prefix
+  - `with_paginate`: whether to include pagination information, default `true`
+  - `callback`: callback processing for `queryable`
 
 #### `Turbo.Ecto.turboq(queryable, params, opts)`
 
 Returns an Ecto.Query.t() object
-
-Translated with www.DeepL.com/Translator (free version)
 
 More example pls move: [docs](https://hexdocs.pm/turbo_ecto/api-reference.html)
 
