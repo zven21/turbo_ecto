@@ -14,7 +14,6 @@ Phoenix support `turbo_html`, check [this](https://github.com/zven21/turbo_html)
 * [Examples](#examples)
 * [Search Matchers](#search-matchers)
 * [Features](#features)
-* [Demo](#demo)
 * [Contributing](#contributing)
 * [Make a pull request](#make-a-pull-request)
 * [License](#license)
@@ -121,43 +120,6 @@ List of all possible search_types
 | `*_ilike` | Contains any of | Y | (SQL: `col ILIKE '%value%'`) |
 | `*_true` | is true or false | Y | (SQL: `col is true or col is false`) |
 | `*_between`| begin < between < end | Y | e.g. `q[price_between][]=100&q[price_between][]=200` (SQL: `100 <= price <= 200`) |
-
-
-## Demo
-
-The dummy app shows a simple turbo_ecto example.
-
-Clone the repository.
-
-```bash
-https://github.com/zven21/turbo_ecto.git
-```
-
-Change directory
-
-```bash
-$ cd dummy
-```
-
-Run mix
-
-```bash
-$ mix deps.get && yarn --cwd=assets
-```
-
-Preparing database
-
-```bash
-$ mix ecto.setup
-```
-
-Start the Phoenix server
-
-```bash
-$ ./script/server
-```
-
-Open your browser, and visit `http://localhost:4000`
 
 ## Contributing
 
