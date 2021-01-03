@@ -62,9 +62,9 @@ You can also define other configurations with `entry_name` and `pagenate_name` i
 ```elixir
 
   iex> params = %{"q" => %{"name_and_category_name_like" => "elixir"}, "s" => "inserted_at+asc", "page" = 0, "per_page" => 20}
-  iex> Turbo.Ecto.turbo(Turbo.Ecto.Product, params)
+  iex> Turbo.Ecto.turbo(Turbo.Ecto.Schemas.Post, params)
   %{
-    datas: [%Turbo.Ecto.Product{}],
+    datas: [%Turbo.Ecto.Schemas.Post{}],
     paginate: %{
       current_page: 10,
       next_page: 11,

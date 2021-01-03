@@ -10,17 +10,17 @@ defmodule Turbo.Ecto.Builder.LimitOffset do
 
   When type is `:limit`:
       iex> type = :limit
-      iex> query = Turbo.Ecto.Product
+      iex> query = Turbo.Ecto.Schemas.Post
       iex> val = 1
       iex> Turbo.Ecto.Builder.LimitOffset.build(type, query, val, [])
-      #Ecto.Query<from p0 in Turbo.Ecto.Product, limit: 1>
+      #Ecto.Query<from p0 in Turbo.Ecto.Schemas.Post, limit: 1>
 
   When type is `:offset`:
       iex> type = :offset
-      iex> query = Turbo.Ecto.Product
+      iex> query = Turbo.Ecto.Schemas.Post
       iex> val = 1
       iex> Turbo.Ecto.Builder.LimitOffset.build(type, query, val, [])
-      #Ecto.Query<from p0 in Turbo.Ecto.Product, offset: 1>
+      #Ecto.Query<from p0 in Turbo.Ecto.Schemas.Post, offset: 1>
 
   """
   @spec build(:limit | :offset, Ecto.Query.t(), integer(), Macro.t()) :: Ecto.Query.t()

@@ -10,7 +10,7 @@ defmodule Turbo.Ecto do
     | ------------- | ------------- | --------- |
     | `name`  | string  |  |
 
-  ### Product Table Structure
+  ### Post Table Structure
 
     |  Field | Type | Comment |
     | ------------- | ------------- | --------- |
@@ -20,7 +20,7 @@ defmodule Turbo.Ecto do
     | `category_id` | integer | |
     | `available` | boolean |  |
 
-  ### Variant Table Structure
+  ### Reply Table Structure
 
     |  Field | Type | Comment |
     | ------------- | ------------- | --------- |
@@ -31,15 +31,15 @@ defmodule Turbo.Ecto do
   * Input Search
 
     ```elixir
-    url_query = http://localhost:4000/varinats?q[product_name_or_name_like]=elixir
+    url_query = http://localhost:4000/repies?q[post_name_or_content_like]=elixir
     ```
 
   * Expect output:
 
     ```elixir
-    iex> params = %{"q" => %{"product_name_or_name_like" => "elixir"}}
-    iex> Turbo.Ecto.turboq(Turbo.Ecto.Variant, params)
-    #Ecto.Query<from v0 in Turbo.Ecto.Variant, join: p1 in assoc(v0, :product), where: like(p1.name, \"%elixir%\") or like(v0.name, \"%elixir%\"), limit: 10, offset: 0>
+    iex> params = %{"q" => %{"post_name_or_content_like" => "elixir"}}
+    iex> Turbo.Ecto.turboq(Turbo.Ecto.Schemas.Reply, params)
+    #Ecto.Query<from r0 in Turbo.Ecto.Schemas.Reply, join: p1 in assoc(r0, :post), where: like(p1.name, \"%elixir%\") or like(r0.content, \"%elixir%\"), limit: 10, offset: 0>
     ```
 
   """
@@ -55,25 +55,12 @@ defmodule Turbo.Ecto do
 
   ## Example
 
-    iex> params = %{"q" => %{"name_or_product_name_like" => "elixir", "price_eq" => "1"}, "s" => "updated_at+asc", "per_page" => 5, "page" => 1}
-    iex> Turbo.Ecto.turbo(Turbo.Ecto.Variant, params)
-    %{
-      paginate: %{current_page: 1, per_page: 5, next_page: nil, prev_page: nil, total_count: 0, total_pages: 0},
-      datas: []
-    }
-
-    iex> import Ecto.Query
-    iex> params = %{"q" => %{"name_or_product_name_like" => "elixir", "price_eq" => "1"}, "s" => "updated_at+asc", "per_page" => 5, "page" => 1}
-    iex> callback = fn queryable -> queryable |> select([:name]) end
-    iex> Turbo.Ecto.turbo(Turbo.Ecto.Variant, params, callback: callback)
-    %{
-      paginate: %{current_page: 1, per_page: 5, next_page: nil, prev_page: nil, total_count: 0, total_pages: 0},
-      datas: []
-    }
-
-    iex> params = %{"q" => %{"name_or_product_name_like" => "elixir", "price_eq" => "1"}, "s" => "updated_at+asc", "per_page" => 5, "page" => 1}
-    iex> Turbo.Ecto.turbo(Turbo.Ecto.Variant, params, with_paginate: false)
-    []
+      iex> params = %{"q" => %{"name_or_replies_content_like" => "elixir", "price_eq" => "1"}, "s" => "updated_at+asc", "per_page" => 5, "page" => 1}
+      iex> Turbo.Ecto.turbo(Turbo.Ecto.Schemas.Post, params)
+      %{
+        paginate: %{current_page: 1, per_page: 5, next_page: nil, prev_page: nil, total_count: 0, total_pages: 0},
+        datas: []
+      }
 
   """
   @spec turbo(Ecto.Query.t(), map(), keyword()) :: map()
@@ -121,8 +108,8 @@ defmodule Turbo.Ecto do
   ## Example
 
     iex> params = %{"q" => %{"name_or_body_like" => "elixir", "a_eq" => ""}, "s" => "updated_at+asc", "per_page" => 5, "page" => 1}
-    iex> Turbo.Ecto.turboq(Turbo.Ecto.Product, params)
-    #Ecto.Query<from p0 in Turbo.Ecto.Product, where: like(p0.name, \"%elixir%\") or like(p0.body, \"%elixir%\"), order_by: [asc: p0.updated_at], limit: 5, offset: 0>
+    iex> Turbo.Ecto.turboq(Turbo.Ecto.Schemas.Post, params)
+    #Ecto.Query<from p0 in Turbo.Ecto.Schemas.Post, where: like(p0.name, \"%elixir%\") or like(p0.body, \"%elixir%\"), order_by: [asc: p0.updated_at], limit: 5, offset: 0>
 
   """
   @spec turboq(Ecto.Query.t(), map()) :: Ecto.Query.t()

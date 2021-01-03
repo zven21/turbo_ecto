@@ -21,7 +21,7 @@ defmodule Turbo.Ecto.Hooks.Search do
   ## Examples
 
       iex> params = %{"q" => %{"name_or_category_name_like" => "elixir", "price_eq" => 1}, "s" => "updated_at+asc", "per_page" => 5, "page" => 1}
-      iex> Turbo.Ecto.Hooks.Search.run(Turbo.Ecto.Product, params)
+      iex> Turbo.Ecto.Hooks.Search.run(Turbo.Ecto.Schemas.Post, params)
       {:ok,
         %Turbo.Ecto.Hooks.Search{
           combinator: :and,
@@ -49,7 +49,7 @@ defmodule Turbo.Ecto.Hooks.Search do
       }
 
       iex> params = %{"filter" => %{"name_like" => "elixir", "price_eq" => 1}}
-      iex> Turbo.Ecto.Hooks.Search.run(Turbo.Ecto.Product, params)
+      iex> Turbo.Ecto.Hooks.Search.run(Turbo.Ecto.Schemas.Post, params)
       {:ok,
         %Turbo.Ecto.Hooks.Search{
           combinator: :and,
