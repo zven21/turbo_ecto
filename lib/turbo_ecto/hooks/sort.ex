@@ -16,11 +16,11 @@ defmodule Turbo.Ecto.Hooks.Sort do
 
   When sort with one field:
       iex> params = %{}
-      iex> Turbo.Ecto.Hooks.Sort.run(Turbo.Ecto.Product, params)
+      iex> Turbo.Ecto.Hooks.Sort.run(Turbo.Ecto.Schemas.Post, params)
       {:ok,[]}
 
       iex> params = %{"s" => "inserted_at+desc"}
-      iex> Turbo.Ecto.Hooks.Sort.run(Turbo.Ecto.Product, params)
+      iex> Turbo.Ecto.Hooks.Sort.run(Turbo.Ecto.Schemas.Post, params)
       {:ok,
         [
           %Turbo.Ecto.Hooks.Sort{
@@ -36,7 +36,7 @@ defmodule Turbo.Ecto.Hooks.Sort do
   When sort with multi fields:
 
       iex> params = %{"s" => ["updated_at+desc", "inserted_at+asc"]}
-      iex> Turbo.Ecto.Hooks.Sort.run(Turbo.Ecto.Product, params)
+      iex> Turbo.Ecto.Hooks.Sort.run(Turbo.Ecto.Schemas.Post, params)
       {:ok,
         [
           %Turbo.Ecto.Hooks.Sort{

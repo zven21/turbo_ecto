@@ -8,10 +8,10 @@ defmodule Turbo.Ecto.Builder.Join do
 
   ## Example
 
-      iex> query = Turbo.Ecto.Variant
-      iex> relations = [:product, :prototypes]
+      iex> query = Turbo.Ecto.Schemas.Post
+      iex> relations = [:category, :repleis]
       iex> Turbo.Ecto.Builder.Join.build(query, relations)
-      #Ecto.Query<from v0 in Turbo.Ecto.Variant, join: p1 in assoc(v0, :product), join: p2 in assoc(v0, :prototypes)>
+      #Ecto.Query<from p0 in Turbo.Ecto.Schemas.Post, join: c1 in assoc(p0, :category), join: r2 in assoc(p0, :repleis)>
 
   """
   @spec build(Ecto.Query.t(), [atom()]) :: Ecto.Query.t()
