@@ -3,6 +3,8 @@ defmodule Turbo.Ecto.Schemas.Post do
 
   use Ecto.Schema
 
+  @type t :: %__MODULE__{}
+
   schema "posts" do
     field(:name, :string)
     field(:body, :string)

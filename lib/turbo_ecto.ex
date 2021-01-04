@@ -26,7 +26,7 @@ defmodule Turbo.Ecto do
     | ------------- | ------------- | --------- |
     | `name`  | string  |  |
     | `price` | float |  |
-    | `product_id` | integer | |
+    | `post_id` | integer | |
 
   * Input Search
 
@@ -68,7 +68,7 @@ defmodule Turbo.Ecto do
     build_opts = uniq_merge(opts, TConfig.defaults())
 
     entry_name = Keyword.get(build_opts, :entry_name, "entries")
-    paginate_name = Keyword.get(build_opts, :paginate_name, "datas")
+    paginate_name = Keyword.get(build_opts, :paginate_name, "paginate")
     with_paginate = Keyword.get(build_opts, :with_paginate, true)
     callback = Keyword.get(build_opts, :callback, fn queryable -> queryable end)
     prefix = Keyword.get(build_opts, :prefix)

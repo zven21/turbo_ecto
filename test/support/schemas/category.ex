@@ -3,6 +3,8 @@ defmodule Turbo.Ecto.Schemas.Category do
 
   use Ecto.Schema
 
+  @type t :: %__MODULE__{}
+
   schema "categories" do
     field(:name, :string)
     field(:posts_count, :integer)
