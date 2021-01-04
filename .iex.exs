@@ -7,4 +7,4 @@ alias Turbo.Ecto.Hooks.Search
 alias Turbo.Ecto.Hooks.Sort
 alias Turbo.Ecto.Hooks.Paginate
 
-alias Turbo.Ecto.{Category, Product, Variant}
+alias Turbo.Ecto.TestSchema.{Category, Post, Reply}

@@ -26,7 +26,7 @@ Phoenix support `turbo_html`, check [this](https://github.com/zven21/turbo_html)
 ```elixir
 def deps do
   [
-    {:turbo_ecto, "~> 0.6.2"}
+    {:turbo_ecto, "~> 1.0.0"}
   ]
 end
 ```
@@ -49,7 +49,7 @@ You can also define other configurations with `entry_name` and `pagenate_name` i
     | ------------- | ------------- | --------- |
     | `name`  | string  |  |
 
-* Product Table Structure
+* Post Table Structure
 
     |  Field | Type | Comment |
     | ------------- | ------------- | --------- |
@@ -105,21 +105,31 @@ More example pls move: [docs](https://hexdocs.pm/turbo_ecto/api-reference.html)
 
 List of all possible search_types
 
-| Predicate | Description | Finish | Note
-| ------------- | ------------- |-------- |-------- |
-| `*_eq`  | equal  | Y | (SQL: `col = 'value'`) |
-| `*_not_eq` | not equal | Y | (SQL: `col != 'value'`) |
-| `*_lt` | less than | Y | (SQL: `col < 1024`) |
-| `*_lteq` | less than or equal | Y |  (SQL: `col <= 1024`) |
-| `*_gt` | greater than | Y | (SQL: `col > 1024`) |
-| `*_gteq` | greater than or equal | Y | greater than or equal. (SQL: `col >= 1024`) |
-| `*_present` | not null and not empty | Y | Only compatible with string columns. Example: `q[name_present]=1` (SQL: `col is not null AND col != ''`) |
-| `*_null` | is null true or false | Y | (SQL: `col is null` or `col is not null`) |
-| `*_in` | match any values in array | Y | e.g. `q[name_in][]=Alice&q[name_in][]=Bob` (SQL: `name in ('Alice', 'Bob')`)|
-| `*_like` | Contains value | Y | (SQL: `col LIKE '%value%'`) |
-| `*_ilike` | Contains any of | Y | (SQL: `col ILIKE '%value%'`) |
-| `*_true` | is true or false | Y | (SQL: `col is true or col is false`) |
-| `*_between`| begin < between < end | Y | e.g. `q[price_between][]=100&q[price_between][]=200` (SQL: `100 <= price <= 200`) |
+| Predicate | Description | Note
+| ------------- | ------------- | -------- |
+| `*_eq`  | equal  | (SQL: `col = 'value'`) |
+| `*_not_eq` | not equal | (SQL: `col != 'value'`) |
+| `*_lt` | less than | (SQL: `col < 1024`) |
+| `*_lteq` | less than or equal | (SQL: `col <= 1024`) |
+| `*_gt` | greater than | (SQL: `col > 1024`) |
+| `*_gteq` | greater than or equal | greater than or equal. (SQL: `col >= 1024`) |
+| `*_is_present` | not null and not empty | Only compatible with string columns. Example: `q[name_present]=1` (SQL: `col is not null AND col != ''`) |
+| `*_is_null` | is null true or false | (SQL: `col is null` or `col is not null`) |
+| `*_like` | contains value | (SQL: `col LIKE '%value%'`) |
+| `*_ilike` | contains any of |  (SQL: `col ILIKE '%value%'`) |
+| `*_is_true` | is true or false |  (SQL: `col is true or col is false`) |
+| `*_is_not_true`| is true or false| SQL: `col is not true or col is false` |
+| `*_is_false`| is true or false| SQL: `col is false`|
+| `*_is_not_false`| is true or false|  SQL: `col is not false`|
+| `*_is_null`| is null| SQL: `col is nil`|
+| `*_is_not_null`| is not null| | SQL: `col is not nil`|
+| `*_in` | match any values in array |  e.g. `q[name_in][]=Alice&q[name_in][]=Bob` (SQL: `name in ('Alice', 'Bob')`)|
+| `*_not_in`| not continas| SQL: `col not in ('Alice', 'Bob')`|  
+| `*_start_with`| start with values| (SQL: `col LIKE '%value'`) |
+| `*_not_start_with`| not start with values| (SQL: `col not LIKE '%value'`)|
+| `*_end_with`| end with values| (SQL: `col LIKE 'value%'`)|
+| `*_not_end_with`| not end with values| e.g. `q[name_not_end_with][]=Alice` (SQL: `col not LIKE 'value%'`)|
+| `*_between`| begin < between < end | e.g. `q[price_between][]=100&q[price_between][]=200` (SQL: `100 <= price and price <= 200`) |
 
 ## Contributing
 
