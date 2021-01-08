@@ -26,7 +26,7 @@ Phoenix support `turbo_html`, check [this](https://github.com/zven21/turbo_html)
 ```elixir
 def deps do
   [
-    {:turbo_ecto, "~> 1.0.0"}
+    {:turbo_ecto, "~> 1.0.1"}
   ]
 end
 ```

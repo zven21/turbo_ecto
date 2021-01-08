@@ -1,7 +1,7 @@
 defmodule Turbo.Ecto.MixProject do
   use Mix.Project
 
-  @version "1.0.0"
+  @version "1.0.1"
   @github "https://github.com/zven21/turbo_ecto"
 
   def project do
