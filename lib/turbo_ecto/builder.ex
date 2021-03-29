@@ -5,6 +5,8 @@ defmodule Turbo.Ecto.Builder do
   alias Turbo.Ecto.Hooks.{Search, Sort, Paginate}
   alias Turbo.Ecto.Utils
 
+  @type queryable :: Ecto.Schema.t() | Ecto.Queryable.t()
+
   @doc """
   Builds a search `Ecto.Query.t` on top of a given `Ecto.Query.t` variable
   with given `params`.
@@ -78,7 +80,7 @@ defmodule Turbo.Ecto.Builder do
       #Ecto.Query<from p0 in Turbo.Ecto.Schemas.Post, join: c1 in assoc(p0, :category), where: like(p0.body, \"%elixir%\") or (like(c1.name, \"%elixir%\") or like(p0.name, \"%elixir%\")), limit: 10, offset: 0>
 
   """
-  @spec run(Ecto.Query.t(), map()) :: Ecto.Query.t()
+  @spec run(queryable(), map()) :: Ecto.Query.t()
   def run(queryable, params) do
     schema = extract_schema(queryable)
 
@@ -149,7 +151,6 @@ defmodule Turbo.Ecto.Builder do
     acc
   end
 
-  @spec extract_schema(map() | Ecto.Query.t()) :: Ecto.Query.t()
   def extract_schema(%{from: %{source: %{query: subquery}}}), do: extract_schema(subquery)
   def extract_schema(%{from: %{source: {_, schema}}}), do: schema
   def extract_schema(schema), do: schema
