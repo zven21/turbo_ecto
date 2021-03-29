@@ -71,7 +71,7 @@ defmodule Turbo.Ecto.Utils do
       ["string", %{not_nil: "a value", nested: %{other: "other"}}, ["nested", 2]]
 
   """
-  @spec compaction!(Map.t() | List.t()) :: Map.t() | List.t()
+  @spec compaction!(map() | list()) :: map() | list()
   def compaction!(value)
 
   def compaction!(value) when is_map(value) do
