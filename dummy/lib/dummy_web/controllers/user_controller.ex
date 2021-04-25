@@ -4,9 +4,10 @@ defmodule DummyWeb.UserController do
   alias Dummy.Accounts
   alias Dummy.Accounts.User
 
-  def index(conn, _params) do
-    users = Accounts.list_users()
-    render(conn, "index.html", users: users)
+  def index(conn, params) do
+    with %{entries: entries, paginate: paginate} <- Accounts.list_users(params) do
+      render(conn, "index.html", users: entries)
+    end
   end
 
   def new(conn, _params) do

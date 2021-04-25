@@ -3,7 +3,6 @@ defmodule Dummy.Repo do
     otp_app: :dummy,
     adapter: Ecto.Adapters.Postgres
 
-
   @doc """
   Returns the pagi data list.
 

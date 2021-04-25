@@ -4,7 +4,11 @@ defmodule DummyWeb.UserControllerTest do
   alias Dummy.Accounts
 
   @create_attrs %{email: "some email", mobile: "some mobile", nickname: "some nickname"}
-  @update_attrs %{email: "some updated email", mobile: "some updated mobile", nickname: "some updated nickname"}
+  @update_attrs %{
+    email: "some updated email",
+    mobile: "some updated mobile",
+    nickname: "some updated nickname"
+  }
   @invalid_attrs %{email: nil, mobile: nil, nickname: nil}
 
   def fixture(:user) do
@@ -75,6 +79,7 @@ defmodule DummyWeb.UserControllerTest do
     test "deletes chosen user", %{conn: conn, user: user} do
       conn = delete(conn, Routes.user_path(conn, :delete, user))
       assert redirected_to(conn) == Routes.user_path(conn, :index)
+
       assert_error_sent 404, fn ->
         get(conn, Routes.user_path(conn, :show, user))
       end

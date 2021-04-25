@@ -7,7 +7,11 @@ defmodule Dummy.AccountsTest do
     alias Dummy.Accounts.User
 
     @valid_attrs %{email: "some email", mobile: "some mobile", nickname: "some nickname"}
-    @update_attrs %{email: "some updated email", mobile: "some updated mobile", nickname: "some updated nickname"}
+    @update_attrs %{
+      email: "some updated email",
+      mobile: "some updated mobile",
+      nickname: "some updated nickname"
+    }
     @invalid_attrs %{email: nil, mobile: nil, nickname: nil}
 
     def user_fixture(attrs \\ %{}) do

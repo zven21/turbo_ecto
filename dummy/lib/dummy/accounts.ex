@@ -17,8 +17,13 @@ defmodule Dummy.Accounts do
       [%User{}, ...]
 
   """
-  def list_users do
-    Repo.all(User)
+  def list_users(params \\ %{}) do
+    Turbo.Ecto.turbo(User, params)
+  end
+
+  def list_users_2(params \\ %{}) do
+    queryable = from(u in User)
+    Turbo.Ecto.turbo(queryable, params)
   end
 
   @doc """
