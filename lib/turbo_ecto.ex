@@ -50,6 +50,8 @@ defmodule Turbo.Ecto do
   alias Turbo.Ecto.{Builder, Utils}
   alias Turbo.Ecto.Hooks.Paginate
 
+  @type queryable :: Ecto.Schema.t() | Ecto.Queryable.t()
+
   @doc """
   Returns a result and pageinate info.
 
@@ -63,7 +65,7 @@ defmodule Turbo.Ecto do
       }
 
   """
-  @spec turbo(any(), map(), keyword()) :: map()
+  @spec turbo(queryable, map(), keyword()) :: map()
   def turbo(queryable, params, opts \\ []) do
     build_opts = uniq_merge(opts, TConfig.defaults())
 
@@ -112,7 +114,7 @@ defmodule Turbo.Ecto do
     #Ecto.Query<from p0 in Turbo.Ecto.Schemas.Post, where: like(p0.name, \"%elixir%\") or like(p0.body, \"%elixir%\"), order_by: [asc: p0.updated_at], limit: 5, offset: 0>
 
   """
-  @spec turboq(any(), map()) :: Ecto.Query.t()
+  @spec turboq(queryable(), map()) :: Ecto.Queryable.t()
   def turboq(queryable, params), do: Builder.run(queryable, params)
 
   defp get_paginate(queryable, params, opts), do: Paginate.get_paginate(queryable, params, opts)

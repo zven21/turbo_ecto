@@ -55,7 +55,6 @@ defmodule Turbo.Ecto.Hooks.Paginate do
   @doc """
   Returns the paginate info.
   """
-  @spec get_paginate(Ecto.Query.t(), map(), Keyword.t()) :: map()
   def get_paginate(queryable, params, opts) do
     formated_params = format_params(params)
 
