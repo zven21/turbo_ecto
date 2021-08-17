@@ -1,7 +1,9 @@
 defmodule Turbo.Ecto.Hooks.Search do
   @moduledoc """
   This module provides a operations that can add searching functionality to
-  a pipeline of `Ecto` queries. This module works by taking fields.
+  a pipeline of `Ecto` queries.
+
+  This module works by taking fields.
 
   Inspire from: [ex_sieve](https://github.com/valyukov/ex_sieve/blob/master/lib/ex_sieve/node/grouping.ex)
   """
