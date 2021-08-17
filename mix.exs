@@ -7,12 +7,13 @@ defmodule Turbo.Ecto.MixProject do
   def project do
     [
       app: :turbo_ecto,
-      description: "A elixir lib for search, sort, paginate.",
+      description: "An Elixir lib for search, sort, and paginate.",
       version: @version,
       elixir: "~> 1.6",
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps(),
+      docs: docs(),
       package: package(),
       elixirc_paths: elixirc_paths(Mix.env()),
       test_coverage: [tool: ExCoveralls],
@@ -35,7 +36,7 @@ defmodule Turbo.Ecto.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:ex_doc, ">= 0.0.0", only: :dev},
+      {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
       {:ecto_sql, "~> 3.0"},
       {:postgrex, ">= 0.0.0", only: :test},
       {:ex_machina, "~> 2.4", only: :test},
@@ -46,7 +47,7 @@ defmodule Turbo.Ecto.MixProject do
 
   defp package do
     [
-      files: ["lib", "mix.exs", "README.md"],
+      files: ["lib", "mix.exs", "README.md", "LICENSE.md", "CHANGELOG.md"],
       maintainers: ["zven21"],
       licenses: ["MIT"],
       links: %{"GitHub" => @github}
@@ -64,6 +65,19 @@ defmodule Turbo.Ecto.MixProject do
         "ecto.migrate -r Turbo.Ecto.TestRepo --quiet",
         "test"
       ]
+    ]
+  end
+
+  defp docs do
+    [
+      extras: [
+        "CHANGELOG.md": [],
+        "LICENSE.md": [title: "License"],
+        "README.md": [title: "Overview"]
+      ],
+      main: "readme",
+      source_url: @github,
+      formatters: ["html"]
     ]
   end
 end

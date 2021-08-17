@@ -1,6 +1,6 @@
 defmodule Turbo.Ecto.Utils do
   @moduledoc """
-  Utils func
+  Utils functions.
   """
 
   def done({:error, reason}), do: {:error, reason}
@@ -38,9 +38,9 @@ defmodule Turbo.Ecto.Utils do
 
   ## Example
 
-    iex> map = %{a: 1, b: %{c: 3, d: 4}}
-    iex> Turbo.Ecto.Utils.stringify_keys(map)
-    %{"a" => 1, "b" => %{"c" => 3, "d" => 4}}
+      iex> map = %{a: 1, b: %{c: 3, d: 4}}
+      iex> Turbo.Ecto.Utils.stringify_keys(map)
+      %{"a" => 1, "b" => %{"c" => 3, "d" => 4}}
 
   """
   @spec stringify_keys(map()) :: map()
@@ -57,7 +57,8 @@ defmodule Turbo.Ecto.Utils do
   end
 
   @doc """
-  At the map object or list object, delete the key with Value is_nil or == "", and recursion is also considered.
+  At the map object or list object, delete the key with Value is_nil or == "",
+  and recursion is also considered.
 
   ## Examples
 
@@ -104,18 +105,23 @@ defmodule Turbo.Ecto.Utils do
   end
 
   @doc """
-  Takes a map or list and removes keys or elements that have nil or empty values, or are empty maps.
+  Takes a map or list and removes keys or elements that have nil or empty
+  values, or are empty maps.
 
   ## Examples
 
       iex> Turbo.Ecto.Utils.compactify!(%{nil_key: nil, not_nil: "nil"})
       %{not_nil: "nil"}
+
       iex> Turbo.Ecto.Utils.compactify!([1, nil, "string", %{key: :value}])
       [1, "string", %{key: :value}]
+
       iex> Turbo.Ecto.Utils.compactify!([a: nil, b: 2, c: "string"])
       [b: 2, c: "string"]
+
       iex> Turbo.Ecto.Utils.compactify!(%{empty: %{}, not: "not"})
       %{not: "not"}
+
       iex> Turbo.Ecto.Utils.compactify!({"not", "a map"})
       ** (ArgumentError) expecting a map or a list, got: {"not", "a map"}
 

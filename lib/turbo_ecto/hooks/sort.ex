@@ -15,6 +15,7 @@ defmodule Turbo.Ecto.Hooks.Sort do
   ## Examples
 
   When sort with one field:
+
       iex> params = %{}
       iex> Turbo.Ecto.Hooks.Sort.run(Turbo.Ecto.Schemas.Post, params)
       {:ok,[]}
