@@ -61,6 +61,25 @@ defmodule Turbo.Ecto.Hooks.Sort do
   @spec run(Ecto.Query.t(), map()) :: tuple()
   def run(schema, params)
 
+  # New JSON-style sorts: list of maps
+  def run(schema, %{"sorts" => sorts}) when is_list(sorts) do
+    sorts
+    |> Enum.map(&build_from_map(&1, schema))
+    |> result()
+  end
+
+  # New JSON-style sorts: single map
+  def run(schema, %{"sorts" => sort}) when is_map(sort) do
+    [build_from_map(sort, schema)]
+    |> result()
+  end
+
+  # Accept {"sort" => %{...}} as well
+  def run(schema, %{"sort" => sort}) when is_map(sort) do
+    [build_from_map(sort, schema)]
+    |> result()
+  end
+
   def run(schema, %{"s" => s}) do
     s
     |> handle_sort(schema)
@@ -88,6 +107,20 @@ defmodule Turbo.Ecto.Hooks.Sort do
   defp handle_sort(values, schema) do
     values
     |> Enum.map(&build(&1, schema))
+  end
+
+  defp build_from_map(%{"field" => field, "dir" => dir} = _map, schema),
+    do: build_from_map(%{"attribute" => field, "direction" => dir}, schema)
+
+  defp build_from_map(%{"field" => field, "direction" => dir} = _map, schema),
+    do: build_from_map(%{"attribute" => field, "direction" => dir}, schema)
+
+  defp build_from_map(%{"attribute" => field, "dir" => dir} = _map, schema),
+    do: build_from_map(%{"attribute" => field, "direction" => dir}, schema)
+
+  defp build_from_map(%{"attribute" => field, "direction" => dir}, schema) when is_binary(dir) do
+    attribute = field |> String.replace(".", "_") |> Attribute.extract(schema)
+    result(attribute, String.downcase(dir))
   end
 
   defp build(value, schema) do

@@ -17,6 +17,7 @@ Phoenix support `turbo_html`, check [this](https://github.com/zven21/turbo_html)
 
 * [Getting started](#getting-started)
 * [Examples](#examples)
+* [JSON/Map Params](#json-map-params)
 * [Search Matchers](#search-matchers)
 * [Features](#features)
 * [Contributing](#contributing)
@@ -35,6 +36,51 @@ def deps do
   ]
 end
 ```
+
+## JSON/Map Params
+
+Turbo.Ecto 兼容传统的扁平参数（`q/filter`、`s/sort`、`page/per_page`），并新增了更结构化的 JSON/map 形式，便于前后端协作与校验。
+
+- Filters（推荐）：
+
+```elixir
+# 单条
+%{"filters" => %{"field" => "name", "op" => "like", "value" => "elixir"}}
+
+# 多条，支持关联字段（用点号表示）
+%{
+  "filters" => [
+    %{"field" => "name", "op" => "like", "value" => "elixir"},
+    %{"field" => "category.name", "op" => "eq", "value" => "tech"}
+  ]
+}
+```
+
+以上将自动转换为传统 `filter` 形式，例如：`%{"filter" => %{"name_like" => "elixir", "category_name_eq" => "tech"}}`。
+
+- Sorts：
+
+```elixir
+# 单条
+%{"sorts" => %{"field" => "updated_at", "direction" => "asc"}}
+
+# 多条
+%{"sorts" => [
+  %{"field" => "updated_at", "dir" => "desc"},
+  %{"field" => "inserted_at", "dir" => "asc"}
+]}
+```
+
+- Paginate：
+
+```elixir
+%{"paginate" => %{"page" => 2, "per_page" => 5}}
+```
+
+兼容键名与说明：
+- 过滤操作符使用 `op`，字段用 `field`，也支持 `attribute`。
+- 排序方向键支持 `dir` 或 `direction`；字段支持关联路径（如 `category.name`）。
+- 若仍使用旧式：`q/filter`、`s/sort`、`page/per_page` 依然可用。
 
 Add the Repo of your app and the desired per_page to the `:turbo_ecto` configuration in `config.exs`:
 
