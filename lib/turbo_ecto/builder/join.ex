@@ -1,8 +1,6 @@
 defmodule Turbo.Ecto.Builder.Join do
   @moduledoc false
 
-  alias Ecto.Query.Builder.Join, as: Join
-
   @doc """
   Builds a quoted join expression.
 
@@ -11,7 +9,7 @@ defmodule Turbo.Ecto.Builder.Join do
       iex> query = Turbo.Ecto.Schemas.Post
       iex> relations = [:category, :repleis]
       iex> Turbo.Ecto.Builder.Join.build(query, relations)
-      #Ecto.Query<from p0 in Turbo.Ecto.Schemas.Post, join: c1 in assoc(p0, :category), join: r2 in assoc(p0, :repleis)>
+      #Ecto.Query<from p0 in Turbo.Ecto.Schemas.Post, join: c1 in assoc(p0, :category), as: :category, join: r2 in assoc(p0, :repleis), as: :repleis>
 
   """
   @spec build(Ecto.Query.t(), [atom()]) :: Ecto.Query.t()
@@ -21,27 +19,18 @@ defmodule Turbo.Ecto.Builder.Join do
 
   @spec apply_join(atom(), Ecto.Queryable.t()) :: Ecto.Query.t()
   def apply_join(relation, query) do
-    query
-    |> Macro.escape()
-    |> Join.build(
-      :inner,
-      [{:query, [], Elixir}],
-      expr(relation),
-      nil,
-      nil,
-      nil,
-      nil,
-      nil,
-      __ENV__
-    )
-    |> elem(0)
-    |> Code.eval_quoted()
-    |> elem(0)
-  end
+    quoted =
+      quote do
+        import Ecto.Query
 
-  defp expr(relation) do
-    quote do
-      unquote(Macro.var(relation, Elixir)) in assoc(query, unquote(relation))
-    end
+        from(q in unquote(Macro.escape(query)),
+          join: r in assoc(q, unquote(relation)),
+          as: unquote(relation)
+        )
+      end
+
+    quoted
+    |> Code.eval_quoted([], __ENV__)
+    |> elem(0)
   end
 end

@@ -63,6 +63,22 @@ defmodule Turbo.Ecto.Hooks.Search do
   @spec run(Ecto.Query.t(), map()) :: tuple()
   def run(schema, params)
 
+  # New JSON-style filters support
+  def run(schema, %{"filters" => filters}) when is_list(filters) do
+    %{"filter" => json_filters_to_filter_map(filters)}
+    |> run(schema)
+  end
+
+  def run(schema, %{"filters" => filter}) when is_map(filter) do
+    %{"filter" => json_filters_to_filter_map([filter])}
+    |> run(schema)
+  end
+
+  def run(schema, %{"filter" => filters}) when is_list(filters) do
+    %{"filter" => json_filters_to_filter_map(filters)}
+    |> run(schema)
+  end
+
   def run(schema, %{"q" => q}) do
     q
     |> extract(schema)
@@ -82,6 +98,37 @@ defmodule Turbo.Ecto.Hooks.Search do
   end
 
   defp extract(params, schema), do: do_extract(params, schema)
+
+  # Accept JSON-style filter items and convert to legacy flat map
+  # Item shape examples:
+  # %{"field" => "name", "op" => "like", "value" => "elixir"}
+  # %{"field" => "category.name", "op" => "eq", "value" => 1}
+  defp json_filters_to_filter_map(items) when is_list(items) do
+    items
+    |> Enum.reduce(%{}, fn item, acc ->
+      case normalize_filter_item(item) do
+        nil -> acc
+        {key, value} -> Map.put(acc, key, value)
+      end
+    end)
+  end
+
+  defp normalize_filter_item(%{"field" => field, "op" => op, "value" => value}) do
+    key = build_key(field, op)
+    {key, value}
+  end
+
+  defp normalize_filter_item(%{"attribute" => field, "op" => op, "value" => value}) do
+    key = build_key(field, op)
+    {key, value}
+  end
+
+  defp normalize_filter_item(_), do: nil
+
+  defp build_key(field, op) when is_binary(field) and is_binary(op) do
+    parent_and_name = String.replace(field, ".", "_")
+    parent_and_name <> "_" <> String.downcase(op)
+  end
 
   defp do_extract(params, schema, combinator \\ :and) do
     case extract_conditions(params, schema) do

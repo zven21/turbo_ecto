@@ -17,6 +17,7 @@ Phoenix support `turbo_html`, check [this](https://github.com/zven21/turbo_html)
 
 * [Getting started](#getting-started)
 * [Examples](#examples)
+* [JSON/Map Params](#json-map-params)
 * [Search Matchers](#search-matchers)
 * [Features](#features)
 * [Contributing](#contributing)
@@ -35,6 +36,51 @@ def deps do
   ]
 end
 ```
+
+## JSON/Map Params
+
+Turbo.Ecto supports both classic flat params (`q/filter`, `s/sort`, `page/per_page`) and structured JSON/map params for better frontend-backend collaboration and validation.
+
+- Filters (recommended):
+
+```elixir
+# single
+%{"filters" => %{"field" => "name", "op" => "like", "value" => "elixir"}}
+
+# multiple; association fields supported via dot notation
+%{
+  "filters" => [
+    %{"field" => "name", "op" => "like", "value" => "elixir"},
+    %{"field" => "category.name", "op" => "eq", "value" => "tech"}
+  ]
+}
+```
+
+This can be converted to the legacy `filter` style, e.g. `%{"filter" => %{"name_like" => "elixir", "category_name_eq" => "tech"}}`.
+
+- Sorts:
+
+```elixir
+# single
+%{"sorts" => %{"field" => "updated_at", "direction" => "asc"}}
+
+# multiple
+%{"sorts" => [
+  %{"field" => "updated_at", "dir" => "desc"},
+  %{"field" => "inserted_at", "dir" => "asc"}
+]}
+```
+
+- Paginate:
+
+```elixir
+%{"paginate" => %{"page" => 2, "per_page" => 5}}
+```
+
+Notes:
+- Use `op` for operators and `field` (or `attribute`) for field names.
+- Sort direction accepts `dir` or `direction`; fields can be association paths like `category.name`.
+- Legacy `q/filter`, `s/sort`, `page/per_page` remain supported.
 
 Add the Repo of your app and the desired per_page to the `:turbo_ecto` configuration in `config.exs`:
 

@@ -31,6 +31,14 @@ defmodule Turbo.Ecto.Hooks.Paginate do
     |> handle_paginate()
   end
 
+  # Support nested paginate map: %{"paginate" => %{page: 2, per_page: 10}}
+  defp format_params(%{"paginate" => %{} = pagi} = params) do
+    params
+    |> Map.merge(pagi)
+    |> Map.delete("paginate")
+    |> format_params()
+  end
+
   defp format_params(params) do
     params
     |> Map.put_new(:per_page, format_integer(Map.get(params, "per_page", @per_page)))
@@ -49,7 +57,11 @@ defmodule Turbo.Ecto.Hooks.Paginate do
 
   # format date, replace string to integer
   defp format_integer(value) do
-    if is_integer(value), do: value, else: String.to_integer(value)
+    cond do
+      is_integer(value) -> value
+      is_binary(value) -> String.to_integer(value)
+      true -> value
+    end
   end
 
   @doc """

@@ -1,6 +1,6 @@
-use Mix.Config
+import Config
 
-config :logger, :console, level: :error
+config :logger, :console, level: :warning
 
 config :turbo_ecto, Turbo.Ecto,
   repo: Turbo.Ecto.TestRepo,
@@ -8,4 +8,4 @@ config :turbo_ecto, Turbo.Ecto,
 
 config :turbo_ecto, ecto_repos: [Turbo.Ecto.TestRepo]
 
-import_config "#{Mix.env()}.exs"
+import_config "#{config_env()}.exs"

@@ -1,4 +1,4 @@
-use Mix.Config
+import Config
 
 config :turbo_ecto, Turbo.Ecto.TestRepo,
   username: "postgres",
@@ -7,4 +7,4 @@ config :turbo_ecto, Turbo.Ecto.TestRepo,
   hostname: "localhost",
   pool: Ecto.Adapters.SQL.Sandbox
 
-config :logger, level: :warn
+config :logger, level: :warning

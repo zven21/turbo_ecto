@@ -94,6 +94,15 @@ defmodule Turbo.Ecto.Builder do
       relations = build_relations(searches, sorts)
       binding = relations |> build_binding()
 
+      # ensure root named binding using quoted to avoid compile var issues
+      queryable =
+        quote do
+          import Ecto.Query
+          from(q in unquote(Macro.escape(queryable)), as: :query)
+        end
+        |> Code.eval_quoted([], __ENV__)
+        |> elem(0)
+
       queryable
       |> join(relations)
       |> where(searches, binding)
