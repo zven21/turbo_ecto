@@ -39,15 +39,15 @@ end
 
 ## JSON/Map Params
 
-Turbo.Ecto 兼容传统的扁平参数（`q/filter`、`s/sort`、`page/per_page`），并新增了更结构化的 JSON/map 形式，便于前后端协作与校验。
+Turbo.Ecto supports both classic flat params (`q/filter`, `s/sort`, `page/per_page`) and structured JSON/map params for better frontend-backend collaboration and validation.
 
-- Filters（推荐）：
+- Filters (recommended):
 
 ```elixir
-# 单条
+# single
 %{"filters" => %{"field" => "name", "op" => "like", "value" => "elixir"}}
 
-# 多条，支持关联字段（用点号表示）
+# multiple; association fields supported via dot notation
 %{
   "filters" => [
     %{"field" => "name", "op" => "like", "value" => "elixir"},
@@ -56,31 +56,31 @@ Turbo.Ecto 兼容传统的扁平参数（`q/filter`、`s/sort`、`page/per_page`
 }
 ```
 
-以上将自动转换为传统 `filter` 形式，例如：`%{"filter" => %{"name_like" => "elixir", "category_name_eq" => "tech"}}`。
+This can be converted to the legacy `filter` style, e.g. `%{"filter" => %{"name_like" => "elixir", "category_name_eq" => "tech"}}`.
 
-- Sorts：
+- Sorts:
 
 ```elixir
-# 单条
+# single
 %{"sorts" => %{"field" => "updated_at", "direction" => "asc"}}
 
-# 多条
+# multiple
 %{"sorts" => [
   %{"field" => "updated_at", "dir" => "desc"},
   %{"field" => "inserted_at", "dir" => "asc"}
 ]}
 ```
 
-- Paginate：
+- Paginate:
 
 ```elixir
 %{"paginate" => %{"page" => 2, "per_page" => 5}}
 ```
 
-兼容键名与说明：
-- 过滤操作符使用 `op`，字段用 `field`，也支持 `attribute`。
-- 排序方向键支持 `dir` 或 `direction`；字段支持关联路径（如 `category.name`）。
-- 若仍使用旧式：`q/filter`、`s/sort`、`page/per_page` 依然可用。
+Notes:
+- Use `op` for operators and `field` (or `attribute`) for field names.
+- Sort direction accepts `dir` or `direction`; fields can be association paths like `category.name`.
+- Legacy `q/filter`, `s/sort`, `page/per_page` remain supported.
 
 Add the Repo of your app and the desired per_page to the `:turbo_ecto` configuration in `config.exs`:
 

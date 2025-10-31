@@ -60,8 +60,21 @@ defmodule Turbo.Ecto.Services.BuildSearchQuery do
                   between
                   )
 
-  @true_values [1, '1', 'T', 't', true, 'true', 'TRUE', "1", "T", "t", "true", "TRUE"]
-  @false_values [0, '0', 'F', 'f', false, 'false', 'FALSE', "0", "F", "f", "false", "FALSE"]
+  @true_values [1, ~c"1", ~c"T", ~c"t", true, ~c"true", ~c"TRUE", "1", "T", "t", "true", "TRUE"]
+  @false_values [
+    0,
+    ~c"0",
+    ~c"F",
+    ~c"f",
+    false,
+    ~c"false",
+    ~c"FALSE",
+    "0",
+    "F",
+    "f",
+    "false",
+    "FALSE"
+  ]
 
   def search_types, do: @search_types
 
@@ -410,7 +423,7 @@ defmodule Turbo.Ecto.Services.BuildSearchQuery do
   end
 
   def handle_expr(:not_in, attribute, values) do
-    quote do: not (unquote(field_expr(attribute)) in ^unquote(values))
+    quote do: unquote(field_expr(attribute)) not in ^unquote(values)
   end
 
   def handle_expr(:matches, attribute, [value | _]) do
