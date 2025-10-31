@@ -9,7 +9,7 @@ defmodule Turbo.Ecto.MixProject do
       app: :turbo_ecto,
       description: "An Elixir lib for search, sort, and paginate.",
       version: @version,
-      elixir: "~> 1.6",
+      elixir: "~> 1.14",
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps(),
@@ -36,12 +36,12 @@ defmodule Turbo.Ecto.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
-      {:ecto_sql, "~> 3.0"},
-      {:postgrex, ">= 0.0.0", only: :test},
-      {:ex_machina, "~> 2.4", only: :test},
-      {:excoveralls, "~> 0.13.3", only: :test},
-      {:credo, "~> 1.5.2", only: [:dev, :test], runtime: false}
+      {:ex_doc, "~> 0.34", only: :dev, runtime: false},
+      {:ecto_sql, "~> 3.12"},
+      {:postgrex, "~> 0.19", only: :test},
+      {:ex_machina, "~> 2.8", only: :test},
+      {:excoveralls, "~> 0.18", only: :test},
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false}
     ]
   end
 

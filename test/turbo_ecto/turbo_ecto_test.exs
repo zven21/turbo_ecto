@@ -4,7 +4,6 @@ defmodule Turbo.EctoTest do
   """
 
   use Turbo.Ecto.DataCase
-  doctest Turbo.Ecto
 
   alias Turbo.Ecto, as: TE
   alias Turbo.Ecto.Schemas.Post
@@ -205,7 +204,7 @@ defmodule Turbo.EctoTest do
       filter = %{"name_is_present" => true}
 
       assert do_build_search(filter) ==
-               "#Ecto.Query<from p0 in Turbo.Ecto.Schemas.Post, where: not(is_nil(p0.name) or p0.name == ^\"\"), limit: 10, offset: 0>"
+               "#Ecto.Query<from p0 in Turbo.Ecto.Schemas.Post, where: not (is_nil(p0.name) or p0.name == ^\"\"), limit: 10, offset: 0>"
 
       post_fixture()
       %{datas: datas} = do_run_search(filter)
@@ -249,7 +248,7 @@ defmodule Turbo.EctoTest do
       filter = %{"name_not_like" => "post-name-1"}
 
       assert do_build_search(filter) ==
-               "#Ecto.Query<from p0 in Turbo.Ecto.Schemas.Post, where: not(like(p0.name, \"%post-name-1%\")), limit: 10, offset: 0>"
+               "#Ecto.Query<from p0 in Turbo.Ecto.Schemas.Post, where: not like(p0.name, \"%post-name-1%\"), limit: 10, offset: 0>"
 
       post_fixture()
       %{datas: datas} = do_run_search(filter)
@@ -271,7 +270,7 @@ defmodule Turbo.EctoTest do
       filter = %{"name_not_ilike" => "post-name-1"}
 
       assert do_build_search(filter) ==
-               "#Ecto.Query<from p0 in Turbo.Ecto.Schemas.Post, where: not(ilike(p0.name, \"%post-name-1%\")), limit: 10, offset: 0>"
+               "#Ecto.Query<from p0 in Turbo.Ecto.Schemas.Post, where: not ilike(p0.name, \"%post-name-1%\"), limit: 10, offset: 0>"
 
       post_fixture()
       %{datas: datas} = do_run_search(filter)
@@ -315,7 +314,7 @@ defmodule Turbo.EctoTest do
       filter = %{"name_not_ilike" => "post-name-1"}
 
       assert do_build_search(filter) ==
-               "#Ecto.Query<from p0 in Turbo.Ecto.Schemas.Post, where: not(ilike(p0.name, \"%post-name-1%\")), limit: 10, offset: 0>"
+               "#Ecto.Query<from p0 in Turbo.Ecto.Schemas.Post, where: not ilike(p0.name, \"%post-name-1%\"), limit: 10, offset: 0>"
 
       post_fixture()
       %{datas: datas} = do_run_search(%{"name_not_start_with" => "post-name-1"})
@@ -337,7 +336,7 @@ defmodule Turbo.EctoTest do
       filter = %{"name_not_end_with" => "post-name-1"}
 
       assert do_build_search(filter) ==
-               "#Ecto.Query<from p0 in Turbo.Ecto.Schemas.Post, where: not(ilike(p0.name, \"%post-name-1%\")), limit: 10, offset: 0>"
+               "#Ecto.Query<from p0 in Turbo.Ecto.Schemas.Post, where: not ilike(p0.name, \"%post-name-1%\"), limit: 10, offset: 0>"
 
       post_fixture()
       %{datas: datas} = do_run_search(filter)
